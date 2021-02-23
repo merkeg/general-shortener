@@ -10,9 +10,13 @@ export const handleLink = async (request: express.Request, response: express.Res
 	var slugData: SlugData | undefined = JSON.parse(await getAsync(slug));
 
 	if (slugData == undefined) {
-		response.status(404).json({
-			message: "Unknown slug",
-		});
+		if (process.env.HTTP_404_REDIRECT) {
+			response.redirect(process.env.HTTP_404_REDIRECT);
+		} else {
+			response.status(404).json({
+				message: "Unknown slug",
+			});
+		}
 		return;
 	}
 

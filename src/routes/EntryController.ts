@@ -49,23 +49,17 @@ export class NewEntryController extends Controller {
 	public async createNewEntry(@Body() params: NewEntryParams, @Request() req: express.Request) {
 		const existsAsync = promisify(redisInstance.exists).bind(redisInstance);
 
-		if (params.slug) {
-			if (await existsAsync(params.slug)) {
-				this.setStatus(400);
-				return {
-					message: "Slug does already exist",
-				};
+		var slug = params.slug || uid(parseInt(process.env.SLUG_LEN || "7"));
+		if (!params.slug) {
+			while (await existsAsync(slug)) {
+				slug = uid(parseInt(process.env.SLUG_LEN || "7"));
 			}
 		}
 
-		var slug = params.slug || uid(parseInt(process.env.SLUG_LEN || "7"));
-
-		while (await existsAsync(slug)) {
-			slug = uid(parseInt(process.env.SLUG_LEN || "7"));
-		}
 		if (params.type == "file") {
 			params.value = slug + path.extname(req.file.originalname);
 		}
+
 		redisInstance.set(slug, JSON.stringify({ type: params.type, value: params.value }));
 
 		if (params.type == "file") {

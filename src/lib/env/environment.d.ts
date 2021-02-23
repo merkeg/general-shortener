@@ -33,6 +33,8 @@ declare global {
 			SLUG_LEN: string;
 
 			TEXT_WRAPPER: string;
+			HTTP_404_REDIRECT: string;
+			HTTP_BASE_REDIRECT: string;
 		}
 	}
 }

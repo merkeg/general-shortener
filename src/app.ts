@@ -35,6 +35,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.post("/new", multer().single("file"));
 
+app.get("/", (req, res) => {
+	if (process.env.HTTP_BASE_REDIRECT) {
+		res.redirect(process.env.HTTP_BASE_REDIRECT);
+	} else {
+		res.status(200).send("Hello world");
+	}
+});
+
 app.use("/docs", swaggerUi.serve, async (_req: express.Request, res: express.Response) => {
 	return res.send(swaggerUi.generateHTML(await import("../build/swagger.json")));
 });

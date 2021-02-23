@@ -36,6 +36,9 @@ The body of the post request looks like this (json and form-data are accepted):
 | S3_SECRET_KEY           |               |                                       | n        |
 | S3_ENDPOINT             |               | The endpoint s3 is running on         | n        |
 | S3_BUCKET               |               | the bucket to save files on           | n        |
+|                         |               |                                       |          |
+| HTTP_404_REDIRECT       |               | Set to redirect if slug not found     | y        |
+| HTTP_BASE_REDIRECT      |               | Set to redirect on url base `/`       | y        |
 
 ### Example configuration
 
@@ -58,7 +61,7 @@ services:
       - MINIO_ROOT_PASSWORD=miniopassword
     command: server /data
   general-shortener:
-    image: docker.pkg.github.com/merkeg/merkeg-general-storage/merkeg-general-storage:0.0.1.1
+    image: docker.pkg.github.com/merkeg/general-shortener/general-shortener:{VERSION}
     restart: always
     environment:
       - SERVER_BASE_URL=https://example.com
