@@ -3,6 +3,22 @@
 This application is to shorten links, texts (Markdown supported) and files into short and easy to read `slugs`
 This image doesn't need any persistent storage. Everything is saved on s3 and redis. Configuration will be set with environment variables
 
+### Adding new content
+
+There will be an open endpoint called `%BASE_URL%/new`
+With an standard post request you can add new content (More about it on %BASE_URL%/docs)
+
+The body of the post request looks like this (json and form-data are accepted):
+
+```json
+{
+	"password": "%AUTHENTICATION_PASSWORD%",
+	"type": "file | url | text",
+	"value": "for url and text",
+	"file": "Sent via form-data for type file"
+}
+```
+
 ### Environment variables
 
 | Variable                | Default value | Description                           | Optional |
