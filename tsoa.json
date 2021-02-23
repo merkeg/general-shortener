@@ -1,0 +1,25 @@
+{
+	"entryFile": "src/app.ts",
+	"noImplicitAdditionalProperties": "throw-on-extras",
+	"controllerPathGlobs": ["src/**/*Controller.ts"],
+	"spec": {
+		"outputDirectory": "build",
+		"specVersion": 3,
+		"securityDefinitions": {
+			"user_project": {
+				"type": "apiKey",
+				"name": "identity",
+				"in": "Bearer"
+			},
+			"oauth2": {
+				"type": "oauth2",
+				"authorizationUrl": "https://accounts.merkeg.de/oauth2/consent",
+				"flow": "code"
+			}
+		}
+	},
+	"routes": {
+		"routesDir": "build",
+		"authenticationModule": "src/lib/Authentication.ts"
+	}
+}

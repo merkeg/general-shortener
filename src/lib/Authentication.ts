@@ -1,0 +1,30 @@
+import express from "express";
+import { AuthenticationError } from "./ErrorHandler";
+
+export async function expressAuthentication(request: express.Request, securityName: string, scopes: string[]): Promise<any> {
+	if (request.cookies.id != undefined) {
+		return handleAuthCookie(request, securityName, scopes);
+	}
+
+	if (request.body.id != undefined || request.body.password != undefined) {
+		return handleAuthBody(request, securityName, scopes);
+	}
+
+	return Promise.reject(new AuthenticationError("Not authenticated"));
+}
+
+async function handleAuthCookie(request: express.Request, securityName: string, scopes: string[]) {
+	var id = request.cookies.id;
+	return Promise.reject(new AuthenticationError("Not yet implemented"));
+}
+
+async function handleAuthBody(request: express.Request, securityName: string, scopes: string[]) {
+	if (request.body.id != undefined) {
+		return Promise.reject(new AuthenticationError("Not yet implemented"));
+	} else if (request.body.password != undefined) {
+		if (request.body.password == process.env.AUTHENTICATION_PASSWORD) {
+			return Promise.resolve(true);
+		}
+		return Promise.reject(new AuthenticationError("Invalid Password"));
+	}
+}
