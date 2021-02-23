@@ -34,11 +34,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.post("/new", multer().single("file"));
-app.get("/:slug", handleLink);
 
 app.use("/docs", swaggerUi.serve, async (_req: express.Request, res: express.Response) => {
 	return res.send(swaggerUi.generateHTML(await import("../build/swagger.json")));
 });
+
+app.get("/:slug", handleLink);
 
 RegisterRoutes(app);
 
