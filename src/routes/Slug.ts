@@ -25,12 +25,18 @@ export const handleLink = async (request: express.Request, response: express.Res
 	} else if (slugData.type == "text") {
 		response.send(process.env.TEXT_WRAPPER.replace("{{content}}", markdownParser.render(slugData.value)));
 	} else if (slugData.type == "file") {
+		const noDownload = ["image/png", "image/jpeg", "image/jpg", "application/pdf", "audio/mpeg"];
+		const longMedia = ["video/x-matroska", "video/mp4", "audio/mp4", "audio/mpeg"];
+
+		if (longMedia.includes(slugData.mime)) {
+			handleAudioVideo(request, response, slugData);
+			return;
+		}
+
 		var params = {
 			Bucket: process.env.S3_BUCKET,
 			Key: slugData.value,
 		};
-		const noDownload = ["image/png", "image/jpeg", "image/jpg", "application/pdf", "audio/mpeg", "video/x-matroska", "video/mp4"];
-		const videos = ["video/x-matroska", "video/mp4"];
 
 		s3Instance
 			.getObject(params)
@@ -47,16 +53,6 @@ export const handleLink = async (request: express.Request, response: express.Res
 				if (!noDownload.includes(headers["content-type"])) {
 					response.header("Content-disposition", "attachment; filename=" + slugData.value);
 				}
-
-				// TODO: Videos don't work, need workaround
-				// if (videos.includes(headers["content-type"]) && request.headers.range) {
-				// 	var range = request.headers.range;
-				// 	var bytes = range.replace(/bytes=/, "").split("-");
-				// 	var start = parseInt(bytes[0], 10);
-				// 	var total = parseInt(headers["content-length"]);
-				// 	var end = bytes[1] ? parseInt(bytes[1], 10) : total - 1;
-				// 	response.header("Content-Range", "bytes " + start + "-" + end + "/" + total);
-				// }
 			})
 			.createReadStream()
 			.pipe(response);
@@ -64,3 +60,31 @@ export const handleLink = async (request: express.Request, response: express.Res
 		response.status(500).json({ message: "Internal Server error" });
 	}
 };
+
+async function handleAudioVideo(request: express.Request, response: express.Response, slugData: SlugData) {
+	var params = {
+		Bucket: process.env.S3_BUCKET,
+		Key: slugData.value,
+		Range: undefined,
+	};
+
+	if (request.header("range")) {
+		params.Range = request.header("range");
+	} else {
+		params.Range = `bytes=0-`;
+	}
+
+	s3Instance.getObject(params, (err, data) => {
+		if (err) {
+			return console.log(err);
+		}
+		response.status(206);
+		if (data.ContentRange) {
+			response.setHeader("Content-Range", data.ContentRange);
+		}
+		response.setHeader("Accept-Ranges", "bytes");
+		response.setHeader("Content-Length", data.ContentLength);
+		response.setHeader("Content-Type", slugData.mime);
+		response.send(data.Body);
+	});
+}

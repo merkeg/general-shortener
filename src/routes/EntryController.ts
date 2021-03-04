@@ -39,6 +39,8 @@ export interface NewEntryParams {
 export interface SlugData {
 	type: "url" | "file" | "text";
 	value: string;
+	mime?: string;
+	size?: number;
 }
 
 @Route("/")
@@ -59,8 +61,17 @@ export class NewEntryController extends Controller {
 		if (params.type == "file") {
 			params.value = slug + path.extname(req.file.originalname);
 		}
+		const slugData: SlugData = {
+			type: params.type,
+			value: params.value,
+		};
 
-		redisInstance.set(slug, JSON.stringify({ type: params.type, value: params.value }));
+		if (req.file) {
+			slugData.mime = req.file.mimetype;
+			slugData.size = req.file.size;
+		}
+
+		redisInstance.set(slug, JSON.stringify(slugData));
 
 		if (params.type == "file") {
 			var locals = <WrappedLocals>req.res.locals;
