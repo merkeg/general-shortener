@@ -21,24 +21,28 @@ The body of the post request looks like this (json and form-data are accepted):
 
 ### Environment variables
 
-| Variable                | Default value | Description                           | Optional |
-| ----------------------- | ------------- | ------------------------------------- | -------- |
-| SERVER_PORT             | 5000          |                                       | y        |
-| SERVER_BASE_URL         |               | The base url the server is running on | n        |
-|                         |               |                                       |          |
-| AUTHENTICATION_PASSWORD |               | The password to upload new things     | n        |
-|                         |               |                                       |          |
-| REDIS_HOST              |               |                                       | n        |
-| REDIS_PORT              |               |                                       | n        |
-| REDIS_PASSWORD          |               |                                       | n        |
-|                         |               |                                       |          |
-| S3_ACCESS_KEY           |               |                                       | n        |
-| S3_SECRET_KEY           |               |                                       | n        |
-| S3_ENDPOINT             |               | The endpoint s3 is running on         | n        |
-| S3_BUCKET               |               | the bucket to save files on           | n        |
-|                         |               |                                       |          |
-| HTTP_404_REDIRECT       |               | Set to redirect if slug not found     | y        |
-| HTTP_BASE_REDIRECT      |               | Set to redirect on url base `/`       | y        |
+| Variable                | Default value | Description                                             | Optional |
+| ----------------------- | ------------- | ------------------------------------------------------- | -------- |
+| SERVER_PORT             | 5000          |                                                         | y        |
+| SERVER_BASE_URL         |               | The base url the server is running on                   | n        |
+|                         |               |                                                         |          |
+| AUTHENTICATION_PASSWORD |               | The password to upload new things                       | n        |
+|                         |               |                                                         |          |
+| REDIS_HOST              |               |                                                         | n        |
+| REDIS_PORT              |               |                                                         | n        |
+| REDIS_PASSWORD          |               |                                                         | n        |
+|                         |               |                                                         |          |
+| STORAGE_DRIVER          |               | either `s3` or `local`, specify the following variables | n        |
+|                         |               |                                                         |          |
+| STORAGE_LOCAL_DIR       |               | Location of the directory to save the uploaded files    | n\*      |
+|                         |               |                                                         |          |
+| STORAGE_S3_ACCESS_KEY   |               |                                                         | n\*      |
+| STORAGE_S3_SECRET_KEY   |               |                                                         | n\*      |
+| STORAGE_S3_ENDPOINT     |               | The endpoint s3 is running on                           | n\*      |
+| STORAGE_S3_BUCKET       |               | the bucket to save files on                             | n\*      |
+|                         |               |                                                         |          |
+| HTTP_404_REDIRECT       |               | Set to redirect if slug not found                       | y        |
+| HTTP_BASE_REDIRECT      |               | Set to redirect on url base `/`                         | y        |
 
 ### Example configuration
 
@@ -69,6 +73,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=redis
+      - STORAGE_DRIVER=s3
       - S3_ACCESS_KEY=minio
       - S3_SECRET_KEY=miniopassword
       - S3_ENDPOINT=http://s3:9000

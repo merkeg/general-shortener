@@ -7,6 +7,7 @@ import { Body, Controller, Get, Path, Post, Request, Route, Security, Tags } fro
 import { uid } from "uid/secure";
 import { markdownParser, redisInstance, s3Instance } from "../app";
 import { fileFilter, WrappedLocals } from "../ImageUploader";
+import { handleUpload } from "../storage/StorageDrivers";
 const { promisify } = require("util");
 
 export interface NewEntryParams {
@@ -77,14 +78,7 @@ export class NewEntryController extends Controller {
 			var locals = <WrappedLocals>req.res.locals;
 			locals.slug = slug;
 
-			const params = {
-				Body: req.file.buffer,
-				Bucket: process.env.S3_BUCKET,
-				ContentType: req.file.mimetype,
-				Key: slug + path.extname(req.file.originalname),
-			};
-			await s3Instance.upload(params).promise();
-
+			await handleUpload(req.file, slug + path.extname(req.file.originalname));
 			return {
 				message: {
 					url: process.env.SERVER_BASE_URL + "/" + slug,

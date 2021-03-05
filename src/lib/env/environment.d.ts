@@ -22,10 +22,14 @@ declare global {
 
 			AUTHENTICATION_PASSWORD: string;
 
-			S3_ACCESS_KEY: string;
-			S3_SECRET_KEY: string;
-			S3_ENDPOINT: string;
-			S3_BUCKET: string;
+			STORAGE_DRIVER: "s3" | "local";
+
+			STORAGE_LOCAL_DIR: string;
+
+			STORAGE_S3_ACCESS_KEY: string;
+			STORAGE_S3_SECRET_KEY: string;
+			STORAGE_S3_ENDPOINT: string;
+			STORAGE_S3_BUCKET: string;
 
 			REDIS_HOST: string;
 			REDIS_PORT: string;

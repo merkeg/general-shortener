@@ -12,7 +12,7 @@ import multer from "multer";
 import { errorHandler } from "./lib/ErrorHandler";
 import markdownit from "markdown-it/lib";
 import { getLanguage, highlight, highlightAll, initHighlighting } from "highlight.js";
-import { handleLink } from "./routes/Slug";
+import { handleSlug } from "./routes/Slug";
 const cookieParser = require("cookie-parser");
 
 process.env.BASEDIR = __dirname;
@@ -47,7 +47,7 @@ app.use("/docs", swaggerUi.serve, async (_req: express.Request, res: express.Res
 	return res.send(swaggerUi.generateHTML(await import("../build/swagger.json")));
 });
 
-app.get("/:slug", handleLink);
+app.get("/:slug", handleSlug);
 
 RegisterRoutes(app);
 
@@ -78,25 +78,28 @@ redisInstance.on("error", (err: Error) => {
 /**
  * S3
  */
-export const s3Instance = new AWS.S3({
-	accessKeyId: process.env.S3_ACCESS_KEY,
-	secretAccessKey: process.env.S3_SECRET_KEY,
-	endpoint: process.env.S3_ENDPOINT,
-	s3ForcePathStyle: true,
-	signatureVersion: "v4",
-});
+export var s3Instance: AWS.S3 = undefined;
+if (process.env.STORAGE_DRIVER == "s3") {
+	s3Instance = new AWS.S3({
+		accessKeyId: process.env.STORAGE_S3_ACCESS_KEY,
+		secretAccessKey: process.env.STORAGE_S3_SECRET_KEY,
+		endpoint: process.env.STORAGE_S3_ENDPOINT,
+		s3ForcePathStyle: true,
+		signatureVersion: "v4",
+	});
 
-checkBucket();
-async function checkBucket() {
-	var params = {
-		Bucket: process.env.S3_BUCKET,
-	};
-	try {
-		await s3Instance.headBucket(params).promise();
-	} catch (e) {
-		s3Instance.createBucket(params, (err, data) => {
-			if (err) console.log(err.message);
-		});
+	checkBucket();
+	async function checkBucket() {
+		var params = {
+			Bucket: process.env.STORAGE_S3_BUCKET,
+		};
+		try {
+			await s3Instance.headBucket(params).promise();
+		} catch (e) {
+			s3Instance.createBucket(params, (err, data) => {
+				if (err) console.log(err.message);
+			});
+		}
 	}
 }
 

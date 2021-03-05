@@ -29,11 +29,14 @@ export const loadAndCheckEnvironment = () => {
 		} else if (process.env.AUTHENTICATION_MODE == "password") {
 			assert(process.env.AUTHENTICATION_PASSWORD, "AUTHENTICATION_PASSWORD must be set");
 		}
-
-		assert(process.env.S3_ACCESS_KEY, "S3_ACCESS_KEY must be set");
-		assert(process.env.S3_SECRET_KEY, "S3_SECRET_KEY must be set");
-		assert(process.env.S3_ENDPOINT, "S3_ENDPOINT must be set");
-		assert(process.env.S3_BUCKET, "S3_BUCKET must be set");
+		if (process.env.STORAGE_DRIVER == "local") {
+			assert(process.env.STORAGE_LOCAL_DIR, "STORAGE_LOCAL_DIR must be set");
+		} else {
+			assert(process.env.STORAGE_S3_ACCESS_KEY, "STORAGE_S3_ACCESS_KEY must be set");
+			assert(process.env.STORAGE_S3_SECRET_KEY, "STORAGE_S3_SECRET_KEY must be set");
+			assert(process.env.STORAGE_S3_ENDPOINT, "STORAGE_S3_ENDPOINT must be set");
+			assert(process.env.STORAGE_S3_BUCKET, "STORAGE_S3_BUCKET must be set");
+		}
 
 		assert(process.env.REDIS_HOST, "REDIS_HOST must be set");
 		assert(process.env.REDIS_PORT, "REDIS_PORT must be set");
