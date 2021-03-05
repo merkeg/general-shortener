@@ -74,10 +74,10 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD=redis
       - STORAGE_DRIVER=s3
-      - S3_ACCESS_KEY=minio
-      - S3_SECRET_KEY=miniopassword
-      - S3_ENDPOINT=http://s3:9000
-      - S3_BUCKET=slugs
+      - STORAGE_S3_ACCESS_KEY=minio
+      - STORAGE_S3_SECRET_KEY=miniopassword
+      - STORAGE_S3_ENDPOINT=http://s3:9000
+      - STORAGE_S3_BUCKET=slugs
     depends_on:
       - redis
       - s3
