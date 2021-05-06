@@ -20,7 +20,7 @@ export const handleSlug = async (request: express.Request, response: express.Res
 		}
 		return;
 	}
-
+	// console.log(request.headers);
 	if (slugData.type == "url") {
 		response.redirect(slugData.value);
 	} else if (slugData.type == "text") {

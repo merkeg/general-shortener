@@ -10,7 +10,7 @@ export async function localhandleUpload(file: Express.Multer.File, filename: str
 }
 
 export async function localhandleFileDownload(filename: string, slugData: SlugData, request: express.Request, response: express.Response) {
-	const noDownload = ["image/png", "image/jpeg", "image/jpg", "application/pdf", "video/x-matroska", "video/mp4", "audio/mp4", "audio/mpeg", "video/avi"];
+	const noDownload = ["image/png", "image/jpeg", "image/jpg", "image/gif", "application/pdf", "video/x-matroska", "video/mp4", "audio/mp4", "audio/mpeg", "video/avi"];
 
 	const stats = await stat(join(process.env.STORAGE_LOCAL_DIR, filename));
 
