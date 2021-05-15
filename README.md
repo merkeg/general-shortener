@@ -19,7 +19,7 @@ The body of the post request looks like this (json and form-data are accepted):
 }
 ```
 
-You can delete an entry with an delete request to the specified slug you want to delete. `DELETE: %BASE_URL%/:slug`
+You can delete an entry with an delete request to the specified slug you want to delete. `DELETE: %BASE_URL%/:slug` or with the given deletion url
 
 ### Environment variables
 
