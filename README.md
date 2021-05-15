@@ -52,15 +52,6 @@ services:
     volumes:
       - "redis:/data"
     command: redis-server --requirepass redis
-  s3:
-    image: minio/minio:latest
-    restart: always
-    volumes:
-      - "s3:/data"
-    environment:
-      - MINIO_ROOT_USER=minio
-      - MINIO_ROOT_PASSWORD=miniopassword
-    command: server /data
   general-shortener:
     image: docker.pkg.github.com/merkeg/general-shortener/general-shortener:{VERSION}
     restart: always
@@ -74,7 +65,6 @@ services:
       - STORAGE_LOCAL_DIR=/screenshots
     depends_on:
       - redis
-      - s3
 volumes:
   redis:
   s3:
