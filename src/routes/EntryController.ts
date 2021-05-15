@@ -1,12 +1,10 @@
-import { S3Parameters } from "aws-sdk/clients/quicksight";
 import express from "express";
-import multer from "multer";
-import multerS3 from "multer-s3";
+import { unlinkSync } from "fs";
+import { join } from "path";
 import path from "path";
-import { Body, Controller, Get, Path, Post, Request, Route, Security, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Path, Post, Request, Route, Security, Tags } from "tsoa";
 import { uid } from "uid/secure";
-import { markdownParser, redisInstance, s3Instance } from "../app";
-import { fileFilter, WrappedLocals } from "../ImageUploader";
+import { markdownParser, redisInstance } from "../app";
 import { handleUpload } from "../storage/StorageDrivers";
 const { promisify } = require("util");
 
@@ -29,12 +27,7 @@ export interface NewEntryParams {
 	/**
 	 * If mode is password, you can give over here
 	 */
-	password?: string;
-
-	/**
-	 * If mode is oauth2, you can give over here
-	 */
-	id?: string;
+	password: string;
 }
 
 export interface SlugData {
@@ -42,6 +35,13 @@ export interface SlugData {
 	value: string;
 	mime?: string;
 	size?: number;
+}
+
+export interface EntryDeletionParams {
+	password: string;
+}
+export interface WrappedLocals {
+	slug: string;
 }
 
 @Route("/")
@@ -90,6 +90,33 @@ export class NewEntryController extends Controller {
 				message: {
 					url: process.env.SERVER_BASE_URL + "/" + slug,
 				},
+			};
+		}
+	}
+
+	@Security("a")
+	@Delete("{slug}")
+	public async deleteEntry(slug: string, @Body() params: EntryDeletionParams, @Request() req: express.Request) {
+		const existsAsync = promisify(redisInstance.exists).bind(redisInstance);
+		const getAsync = promisify(redisInstance.get).bind(redisInstance);
+
+		if (await existsAsync(slug)) {
+			var slugData: SlugData = JSON.parse(await getAsync(slug));
+
+			if (slugData.type == "file") {
+				var path = join(process.env.STORAGE_LOCAL_DIR, slugData.value);
+				unlinkSync(path);
+			}
+
+			redisInstance.DEL(slug);
+
+			return {
+				message: "Slug deleted",
+			};
+		} else {
+			this.setStatus(404);
+			return {
+				message: "Slug does not exist.",
 			};
 		}
 	}

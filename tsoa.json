@@ -5,18 +5,7 @@
 	"spec": {
 		"outputDirectory": "build",
 		"specVersion": 3,
-		"securityDefinitions": {
-			"user_project": {
-				"type": "apiKey",
-				"name": "identity",
-				"in": "Bearer"
-			},
-			"oauth2": {
-				"type": "oauth2",
-				"authorizationUrl": "https://accounts.merkeg.de/oauth2/consent",
-				"flow": "code"
-			}
-		}
+		"securityDefinitions": {}
 	},
 	"routes": {
 		"routesDir": "build",

@@ -1,6 +1,6 @@
 import express from "express";
 import { promisify } from "util";
-import { markdownParser, redisInstance, s3Instance } from "../app";
+import { markdownParser, redisInstance } from "../app";
 import { handleFileDownload } from "../storage/StorageDrivers";
 import { SlugData } from "./EntryController";
 

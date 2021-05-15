@@ -5,7 +5,6 @@ import bodyParser from "body-parser";
 import { RegisterRoutes } from "../build/routes";
 import swaggerUi from "swagger-ui-express";
 import { RedisClient } from "redis";
-import AWS from "aws-sdk";
 import { ValidateError } from "tsoa";
 import { JsonWebTokenError } from "jsonwebtoken";
 import multer from "multer";
@@ -75,41 +74,13 @@ redisInstance.on("error", (err: Error) => {
 	console.log("[Redis]", "Error with redis: " + err.message);
 });
 
-/**
- * S3
- */
-export var s3Instance: AWS.S3 = undefined;
-if (process.env.STORAGE_DRIVER == "s3") {
-	s3Instance = new AWS.S3({
-		accessKeyId: process.env.STORAGE_S3_ACCESS_KEY,
-		secretAccessKey: process.env.STORAGE_S3_SECRET_KEY,
-		endpoint: process.env.STORAGE_S3_ENDPOINT,
-		s3ForcePathStyle: true,
-		signatureVersion: "v4",
-	});
-
-	checkBucket();
-	async function checkBucket() {
-		var params = {
-			Bucket: process.env.STORAGE_S3_BUCKET,
-		};
-		try {
-			await s3Instance.headBucket(params).promise();
-		} catch (e) {
-			s3Instance.createBucket(params, (err, data) => {
-				if (err) console.log(err.message);
-			});
-		}
-	}
-}
-
 app.use(errorHandler);
 
 /**
  * MARKDOWN
  */
 
-highlightAll();
+//highlightAll();
 export const markdownParser = markdownit({
 	highlight: function (str, lang) {
 		if (lang && getLanguage(lang)) {
