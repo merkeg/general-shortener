@@ -35,6 +35,7 @@ export interface SlugData {
 	value: string;
 	mime?: string;
 	size?: number;
+	deletionCode?: string;
 }
 
 export interface EntryDeletionParams {
@@ -65,6 +66,7 @@ export class NewEntryController extends Controller {
 		const slugData: SlugData = {
 			type: params.type,
 			value: params.value,
+			deletionCode: uid(10),
 		};
 
 		if (req.file) {
@@ -79,29 +81,43 @@ export class NewEntryController extends Controller {
 			locals.slug = slug;
 
 			await handleUpload(req.file, slug + path.extname(req.file.originalname));
-			return {
-				message: {
-					url: process.env.SERVER_BASE_URL + "/" + slug,
-				},
-			};
-		} else {
-			this.setStatus(200);
-			return {
-				message: {
-					url: process.env.SERVER_BASE_URL + "/" + slug,
-				},
-			};
 		}
+
+		this.setStatus(200);
+		return {
+			message: {
+				url: process.env.SERVER_BASE_URL + "/" + slug,
+				deletionUrl: process.env.SERVER_BASE_URL + "/" + slug + "/" + slugData.deletionCode,
+			},
+		};
+	}
+
+	@Get("{slug}/{deletionCode}")
+	public async getDeleteEntry(slug: string, deletionCode: string, @Request() req: express.Request) {
+		return this.delete(slug, deletionCode, false);
 	}
 
 	@Security("a")
 	@Delete("{slug}")
-	public async deleteEntry(slug: string, @Body() params: EntryDeletionParams, @Request() req: express.Request) {
+	public async deleteEntry(slug: string, @Request() req: express.Request) {
+		return this.delete(slug, null, true);
+	}
+
+	public async delete(slug: string, deletionCode: string, force: boolean) {
 		const existsAsync = promisify(redisInstance.exists).bind(redisInstance);
 		const getAsync = promisify(redisInstance.get).bind(redisInstance);
 
 		if (await existsAsync(slug)) {
 			var slugData: SlugData = JSON.parse(await getAsync(slug));
+
+			if (!force) {
+				if (deletionCode !== slugData.deletionCode) {
+					this.setStatus(403);
+					return {
+						message: "Wrong deletion code.",
+					};
+				}
+			}
 
 			if (slugData.type == "file") {
 				var path = join(process.env.STORAGE_LOCAL_DIR, slugData.value);

@@ -46,9 +46,8 @@ app.use("/docs", swaggerUi.serve, async (_req: express.Request, res: express.Res
 	return res.send(swaggerUi.generateHTML(await import("../build/swagger.json")));
 });
 
-app.get("/:slug", handleSlug);
-
 RegisterRoutes(app);
+app.get("/:slug", handleSlug);
 
 /**
  * EXPRESS
