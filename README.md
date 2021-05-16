@@ -67,21 +67,20 @@ services:
       - redis
 volumes:
   redis:
-  s3:
 ```
 
 ### Endpoints
 
-| Endpoint               | Method | Description                                           | Data                          | Protected |
-| ---------------------- | ------ | ----------------------------------------------------- | ----------------------------- | --------- |
-| `/new`                 | POST   | Create a new entry                                    | `type`, `value`, `slug?`      | Yes       |
-| `/:slug`               | GET    | Get the entry                                         |                               |           |
-|                        |        |                                                       |                               |           |
-| `/:slug`               | DELETE | Deletes an entry                                      |                               | Yes       |
-| `/:slug/:deletionCode` | GET    | Deletes an entry withoud password and special request |                               |           |
-|                        |        |                                                       |                               |           |
-| `/:slug/info`          | GET    | Information about the entry                           |                               | Yes       |
-|                        |        |                                                       |                               |           |
-| `/list`                | GET    |                                                       | `offest`, `amount`, `pattern` | Yes       |
+| Endpoint               | Method | Description                                           | Data                             | Protected |
+| ---------------------- | ------ | ----------------------------------------------------- | -------------------------------- | --------- |
+| `/new`                 | POST   | Create a new entry                                    | `type`, `value`, `slug?`         | Yes       |
+| `/:slug`               | GET    | Get the entry                                         |                                  |           |
+|                        |        |                                                       |                                  |           |
+| `/:slug`               | DELETE | Deletes an entry                                      |                                  | Yes       |
+| `/:slug/:deletionCode` | GET    | Deletes an entry withoud password and special request |                                  |           |
+|                        |        |                                                       |                                  |           |
+| `/:slug/info`          | GET    | Information about the entry                           |                                  | Yes       |
+|                        |        |                                                       |                                  |           |
+| `/list`                | GET    |                                                       | `offest?`, `amount?`, `pattern?` | Yes       |
 
-Protected endpoints need a `password` set in either search, body or bearer.
+Protected endpoints need a `password` set in either query, body or bearer.
