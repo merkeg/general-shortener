@@ -40,6 +40,7 @@ You can delete an entry with an delete request to the specified slug you want to
 |                         |               |                                                      |          |
 | HTTP_404_REDIRECT       |               | Set to redirect if slug not found                    | y        |
 | HTTP_BASE_REDIRECT      |               | Set to redirect on url base `/`                      | y        |
+| HTTP_DELETION_REDIRECT  |               | Set to redirect on entry deletion                    | y        |
 
 ### Example configuration
 
