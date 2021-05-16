@@ -1,8 +1,8 @@
-import express from "express";
+import express, { query } from "express";
 import { unlinkSync } from "fs";
 import { join } from "path";
 import path from "path";
-import { Body, Controller, Delete, Get, Path, Post, Request, Route, Security, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Path, Post, Query, Request, Route, Security, Tags } from "tsoa";
 import { uid } from "uid/secure";
 import { markdownParser, redisInstance } from "../app";
 import { handleUpload } from "../storage/StorageDrivers";
@@ -43,6 +43,11 @@ export interface EntryDeletionParams {
 }
 export interface WrappedLocals {
 	slug: string;
+}
+
+export interface EntryListParams {
+	offset?: number;
+	amount?: number;
 }
 
 @Route("/")
@@ -92,6 +97,62 @@ export class NewEntryController extends Controller {
 		};
 	}
 
+	@Get("list")
+	public async getList(@Query() offset: number = 0, @Query() amount: number = 100, @Query() pattern: string = "*", @Request() req: express.Request) {
+		const scanAsync = promisify(redisInstance.scan).bind(redisInstance);
+		const getAsync = promisify(redisInstance.get).bind(redisInstance);
+
+		var data = await scanAsync(offset, "MATCH", pattern, "COUNT", amount);
+		var newOffset: number = data[0];
+		var keys: string[] = data[1] || [];
+		var out = [];
+		for (var i = 0; i < keys.length; i++) {
+			var slugData: SlugData;
+			try {
+				slugData = JSON.parse(await getAsync(keys[i]));
+			} catch (e) {
+				continue;
+			}
+			out.push({
+				slug: keys[i],
+				type: slugData.type,
+				mime: slugData.mime,
+				size: slugData.size,
+				deletionCode: slugData.deletionCode,
+			});
+		}
+		return {
+			message: {
+				newOffset: newOffset,
+				data: out,
+			},
+		};
+	}
+
+	@Security("a")
+	@Get("{slug}/info")
+	public async getEntryInfo(slug: string, @Request() req: express.Request) {
+		const existsAsync = promisify(redisInstance.exists).bind(redisInstance);
+		const getAsync = promisify(redisInstance.get).bind(redisInstance);
+		if (await existsAsync(slug)) {
+			var slugData: SlugData = JSON.parse(await getAsync(slug));
+			return {
+				message: {
+					slug: slug,
+					type: slugData.type,
+					mime: slugData.mime,
+					size: slugData.size,
+					deletionCode: slugData.deletionCode,
+				},
+			};
+		}
+
+		this.setStatus(404);
+		return {
+			message: "Entry does not exist.",
+		};
+	}
+
 	@Get("{slug}/{deletionCode}")
 	public async getDeleteEntry(slug: string, deletionCode: string, @Request() req: express.Request) {
 		return this.delete(slug, deletionCode, false);
@@ -127,12 +188,12 @@ export class NewEntryController extends Controller {
 			redisInstance.DEL(slug);
 
 			return {
-				message: "Slug deleted",
+				message: "Entry deleted",
 			};
 		} else {
 			this.setStatus(404);
 			return {
-				message: "Slug does not exist.",
+				message: "Entry does not exist.",
 			};
 		}
 	}
