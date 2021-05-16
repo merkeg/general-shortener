@@ -22,6 +22,7 @@ declare global {
 
 			TEXT_WRAPPER: string;
 			HTTP_404_REDIRECT: string;
+			HTTP_DELETION_REDIRECT: string;
 			HTTP_BASE_REDIRECT: string;
 		}
 	}
