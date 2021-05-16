@@ -97,6 +97,7 @@ export class NewEntryController extends Controller {
 		};
 	}
 
+	@Security("a")
 	@Get("list")
 	public async getList(@Query() offset: number = 0, @Query() amount: number = 100, @Query() pattern: string = "*") {
 		const scanAsync = promisify(redisInstance.scan).bind(redisInstance);
