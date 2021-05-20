@@ -3,7 +3,6 @@ import { unlinkSync } from "fs";
 import { join } from "path";
 import path from "path";
 import { Body, Controller, Delete, Get, Path, Post, Query, Request, Response, Route, Security, Tags } from "tsoa";
-import { uid } from "uid/secure";
 import { markdownParser, redisInstance } from "../app";
 import { handleUpload } from "../storage/StorageDrivers";
 const { promisify } = require("util");
@@ -58,10 +57,10 @@ export class NewEntryController extends Controller {
 	public async createNewEntry(@Body() params: NewEntryParams, @Request() req: express.Request) {
 		const existsAsync = promisify(redisInstance.exists).bind(redisInstance);
 
-		var slug = params.slug || uid(parseInt(process.env.SLUG_LEN || "7"));
+		var slug = params.slug || this.makeid(parseInt(process.env.SLUG_LEN || "7"));
 		if (!params.slug) {
 			while (await existsAsync(slug)) {
-				slug = uid(parseInt(process.env.SLUG_LEN || "7"));
+				slug = this.makeid(parseInt(process.env.SLUG_LEN || "7"));
 			}
 		}
 
@@ -71,7 +70,7 @@ export class NewEntryController extends Controller {
 		const slugData: SlugData = {
 			type: params.type,
 			value: params.value,
-			deletionCode: uid(10),
+			deletionCode: this.makeid(10),
 		};
 
 		if (req.file) {
@@ -208,5 +207,15 @@ export class NewEntryController extends Controller {
 				};
 			}
 		}
+	}
+
+	private makeid(length) {
+		var result = [];
+		var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		var charactersLength = characters.length;
+		for (var i = 0; i < length; i++) {
+			result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
+		}
+		return result.join("");
 	}
 }
