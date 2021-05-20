@@ -54,7 +54,7 @@ services:
       - "redis:/data"
     command: redis-server --requirepass redis
   general-shortener:
-    image: docker.pkg.github.com/merkeg/general-shortener/general-shortener:{VERSION}
+    image: ghcr.io/merkeg/general-shortener/general-shortener:{VERSION}
     restart: always
     environment:
       - SERVER_BASE_URL=https://example.com
