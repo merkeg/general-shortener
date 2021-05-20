@@ -10,14 +10,21 @@ export async function localhandleUpload(file: Express.Multer.File, filename: str
 }
 
 export async function localhandleFileDownload(filename: string, slugData: SlugData, request: express.Request, response: express.Response) {
-	const noDownload = ["image/png", "image/jpeg", "image/jpg", "image/gif", "application/pdf", "video/x-matroska", "video/mp4", "audio/mp4", "audio/mpeg", "video/avi", "video/webm"];
+	const noDownload = ["image/*", "video/*", "application/pdf"];
 
 	const stats = await stat(join(process.env.STORAGE_LOCAL_DIR, filename));
 
 	response.setHeader("Accept-Ranges", "bytes");
 	response.setHeader("Content-Length", stats.size);
 	response.setHeader("Content-Type", slugData.mime);
-	if (!noDownload.includes(slugData.mime)) {
+
+	let download = true;
+	for (let i = 0; i < noDownload.length; i++) {
+		if (slugData.mime.match(noDownload[i])) {
+			download = false;
+		}
+	}
+	if (download) {
 		response.header("Content-disposition", "attachment; filename=" + slugData.value);
 	}
 
