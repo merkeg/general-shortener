@@ -1,5 +1,5 @@
 {
-	"name": "merkeg-general-storage",
+	"name": "merkeg-general-shortener",
 	"version": "1.0.0",
 	"main": "src/app.ts",
 	"repository": "git@github.com:merkeg/merkeg-general-storage.git",
