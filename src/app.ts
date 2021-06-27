@@ -5,15 +5,12 @@ import bodyParser from "body-parser";
 import { RegisterRoutes } from "../build/routes";
 import swaggerUi from "swagger-ui-express";
 import { RedisClient } from "redis";
-import { ValidateError } from "tsoa";
-import { JsonWebTokenError } from "jsonwebtoken";
 import multer from "multer";
 import { errorHandler } from "./lib/ErrorHandler";
 import markdownit from "markdown-it/lib";
 import { getLanguage, highlight, highlightAll, initHighlighting } from "highlight.js";
 import { handleSlug } from "./routes/Slug";
 import cors from "cors";
-const cookieParser = require("cookie-parser");
 
 process.env.BASEDIR = __dirname;
 loadAndCheckEnvironment();
@@ -24,21 +21,22 @@ export const app = express();
  * CORS Protection
  */
 
-let origins = process.env.CORS?.split(",");
-let apiCors = cors({
-    origin: (origin, callback) => {
-        if (origins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-});
+// let origins = process.env.CORS?.split(",");
+// let apiCors = cors({
+//     origin: (origin, callback) => {
+//         if (origins.indexOf(origin) !== -1) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error("Not allowed by CORS"));
+//         }
+//     },
+// });
 
-app.delete("/:slug", apiCors);
-app.get("/:slug/info", apiCors);
-app.get("/list", apiCors);
+// app.delete("/:slug", apiCors);
+// app.get("/:slug/info", apiCors);
+// app.get("/list", apiCors);
 
+app.use(cors());
 /**
  * EXPRESS ROUTES
  */
