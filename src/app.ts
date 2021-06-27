@@ -12,6 +12,7 @@ import { errorHandler } from "./lib/ErrorHandler";
 import markdownit from "markdown-it/lib";
 import { getLanguage, highlight, highlightAll, initHighlighting } from "highlight.js";
 import { handleSlug } from "./routes/Slug";
+import cors from "cors";
 const cookieParser = require("cookie-parser");
 
 process.env.BASEDIR = __dirname;
@@ -23,10 +24,23 @@ export const app = express();
  * EXPRESS ROUTES
  */
 
+let origins = process.env.CORS?.split(",");
 app.use(
-	bodyParser.urlencoded({
-		extended: true,
-	})
+    cors({
+        origin: (origin, callback) => {
+            if (origins.indexOf(origin) !== -1) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+    })
+);
+
+app.use(
+    bodyParser.urlencoded({
+        extended: true,
+    })
 );
 
 app.use(bodyParser.json());
@@ -35,15 +49,15 @@ app.use(cookieParser());
 app.post("/new", multer().single("file"));
 
 app.get("/", (req, res) => {
-	if (process.env.HTTP_BASE_REDIRECT) {
-		res.redirect(process.env.HTTP_BASE_REDIRECT);
-	} else {
-		res.status(200).send("Hello world");
-	}
+    if (process.env.HTTP_BASE_REDIRECT) {
+        res.redirect(process.env.HTTP_BASE_REDIRECT);
+    } else {
+        res.status(200).send("Hello world");
+    }
 });
 
 app.use("/docs", swaggerUi.serve, async (_req: express.Request, res: express.Response) => {
-	return res.send(swaggerUi.generateHTML(await import("../build/swagger.json")));
+    return res.send(swaggerUi.generateHTML(await import("../build/swagger.json")));
 });
 
 RegisterRoutes(app);
@@ -60,17 +74,17 @@ app.listen(port, () => console.log(`Application listening at http://localhost:${
  * REDIS
  */
 export const redisInstance: RedisClient = require("redis").createClient({
-	host: process.env.REDIS_HOST,
-	port: process.env.REDIS_PORT,
-	password: process.env.REDIS_PASSWORD,
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD,
 });
 
 redisInstance.on("connect", () => {
-	console.log("[Redis]", "Connection to database established");
+    console.log("[Redis]", "Connection to database established");
 });
 
 redisInstance.on("error", (err: Error) => {
-	console.log("[Redis]", "Error with redis: " + err.message);
+    console.log("[Redis]", "Error with redis: " + err.message);
 });
 
 app.use(errorHandler);
@@ -81,16 +95,16 @@ app.use(errorHandler);
 
 //highlightAll();
 export const markdownParser = markdownit({
-	highlight: function (str, lang) {
-		if (lang && getLanguage(lang)) {
-			try {
-				return highlight(lang, str).value;
-			} catch (__) {}
-		}
+    highlight: function (str, lang) {
+        if (lang && getLanguage(lang)) {
+            try {
+                return highlight(lang, str).value;
+            } catch (__) {}
+        }
 
-		return "";
-	},
-	html: true,
-	typographer: true,
-	linkify: true,
+        return "";
+    },
+    html: true,
+    typographer: true,
+    linkify: true,
 });
