@@ -21,38 +21,37 @@ loadAndCheckEnvironment();
 export const app = express();
 
 /**
- * EXPRESS ROUTES
+ * CORS Protection
  */
 
 let origins = process.env.CORS?.split(",");
-app.use(
-    cors({
-        origin: (origin, callback) => {
-            if (origins.indexOf(origin) !== -1) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
-    })
-);
+let apiCors = cors({
+    origin: (origin, callback) => {
+        if (origins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+});
 
-app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    })
-);
+app.delete("/:slug", apiCors);
+app.get("/:slug/info", apiCors);
+app.get("/list", apiCors);
 
+/**
+ * EXPRESS ROUTES
+ */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+
 app.post("/new", multer().single("file"));
 
 app.get("/", (req, res) => {
     if (process.env.HTTP_BASE_REDIRECT) {
         res.redirect(process.env.HTTP_BASE_REDIRECT);
     } else {
-        res.status(200).send("Hello world");
+        res.status(200).send("API OK");
     }
 });
 
