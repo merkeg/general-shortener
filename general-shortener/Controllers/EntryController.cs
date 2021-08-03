@@ -20,11 +20,13 @@ namespace general_shortener.Controllers
         /// This endpoint will directly show or download a file or redirect you
         /// </remarks>
         /// <param name="slug">Slug of the entry you want to get</param>
+        
         [HttpGet("{slug}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status302Found)]
         [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
+        
         public IActionResult GetEntry(string slug)
         {
             return Ok();
