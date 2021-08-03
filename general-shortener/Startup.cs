@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using general_shortener.Filters;
 using general_shortener.Models.Authentication;
 using general_shortener.Services.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +34,7 @@ namespace general_shortener
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddHealthChecks();
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -50,7 +52,8 @@ namespace general_shortener
             var documentationPath = Path.Combine(AppContext.BaseDirectory, "Resources\\documentation.md");
             var documentation = File.ReadAllText(documentationPath);
             
-            services.AddSwaggerGen(c => {
+            services.AddSwaggerGen(c =>
+            {
                 
                 
                 c.IncludeXmlComments(xmlCommentPath);
@@ -66,6 +69,36 @@ namespace general_shortener
                     Url = new Uri("https://twitter.com/merkegor")
                 }
             });
+                
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Api key that is using the Bearer scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                
+                c.OperationFilter<AuthOperationFilter>();
+                
+                // c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                // {
+                //     {
+                //         new OpenApiSecurityScheme
+                //         {
+                //             Reference = new OpenApiReference
+                //             {
+                //                 Type = ReferenceType.SecurityScheme,
+                //                 Id = "Bearer"
+                //             },
+                //             Scheme = "oauth2",
+                //             Name = "Bearer",
+                //             In = ParameterLocation.Header,
+                //
+                //         },
+                //         new List<string>()
+                //     }
+                // });
             });
 
             services.AddAuthentication("Bearer")
@@ -97,14 +130,17 @@ namespace general_shortener
                 c.SpecUrl = "/swagger/v1/swagger.json";
                 c.RoutePrefix = "docs";
             });
-
             app.UseHttpsRedirection();
             app.UseRouting();
             
             app.UseAuthentication();
             app.UseAuthorization();
             
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
+            });
         }
     }
 }
