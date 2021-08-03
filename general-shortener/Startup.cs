@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using general_shortener.Models.Authentication;
+using general_shortener.Services.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +32,7 @@ namespace general_shortener
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -49,6 +52,7 @@ namespace general_shortener
             
             services.AddSwaggerGen(c => {
                 
+                
                 c.IncludeXmlComments(xmlCommentPath);
                 c.SwaggerDoc("v1", new OpenApiInfo
             {
@@ -64,6 +68,17 @@ namespace general_shortener
             });
             });
 
+            services.AddAuthentication("Bearer")
+                .AddScheme<ApiAuthenticationHandlerOptions, ApiAuthenticationHandler>("Bearer", null);
+            services.AddSingleton<IApiAuthenticationManager, ApiKeyAuthenticationManager>();
+
+            services.AddAuthorization(config =>
+            {
+                foreach (var claim in Enum.GetNames<Claim>())
+                {
+                    config.AddPolicy(claim, builder => builder.RequireClaim(claim));
+                }
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -85,7 +100,10 @@ namespace general_shortener
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            
+            app.UseAuthentication();
             app.UseAuthorization();
+            
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
