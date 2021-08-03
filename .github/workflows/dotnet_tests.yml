@@ -3,9 +3,10 @@ name: .NET testing
 on:
   push:
     branches:
+      - develop
+      - master
       - feature/*
       - bugfix/*
-      - hotfix/*
   pull_request:
     branches:
       - develop
