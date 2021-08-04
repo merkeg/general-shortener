@@ -26,7 +26,7 @@ namespace general_shortener.Bootstraps
 
             if (!env.IsTesting())
             {
-                var documentationPath = Path.Combine(AppContext.BaseDirectory, "Resources\\documentation.md");
+                var documentationPath = Path.Combine(AppContext.BaseDirectory, "Resources/documentation.md");
                 documentation = File.ReadAllText(documentationPath);
             } 
             
