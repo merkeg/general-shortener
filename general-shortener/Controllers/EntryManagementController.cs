@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Net.Mime;
 using general_shortener.Attributes;
 using general_shortener.Models;
 using general_shortener.Models.Authentication;
@@ -31,7 +29,7 @@ namespace general_shortener.Controllers
         [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status403Forbidden)]
         [Produces("application/json")]
-        public BaseResponse<NewEntryResponseModel> NewEntry(NewEntryRequestModel entryRequestModel)
+        public BaseResponse<NewEntryResponseModel> NewEntry([FromForm] NewEntryRequestModel entryRequestModel)
         {
             return null;
         }

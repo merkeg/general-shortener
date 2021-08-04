@@ -12,7 +12,7 @@ namespace general_shortener.Models.Authentication
         /// <summary>
         /// The actual key
         /// </summary>
-        public string Key { get; set; }
+        public string Token { get; set; }
         
         /// <summary>
         /// Description (or source) of the api key
