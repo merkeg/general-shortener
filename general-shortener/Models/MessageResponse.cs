@@ -3,7 +3,7 @@
     /// <summary>
     /// Error Message model
     /// </summary>
-    public class ErrorResponse
+    public class MessageResponse
     {
         /// <summary>
         /// Error message

@@ -55,7 +55,7 @@ namespace general_shortener.Controllers
         [TypedAuthorize(Claim.entries_new)]
         [HttpPost()]
         [ProducesResponseType(typeof(BaseResponse<NewEntryResponseModel>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Produces("application/json")]
@@ -63,19 +63,19 @@ namespace general_shortener.Controllers
         public async Task<IActionResult> NewEntry([FromForm] NewEntryRequestModel entryRequestModel)
         {
 
-            if (entryRequestModel.Type == EntryType.file && entryRequestModel.File == null)
+            if (entryRequestModel.type == EntryType.file && entryRequestModel.file == null)
                 return BadRequest(this.ConstructErrorResponse("File must be given on type 'file'"));
             
-            if(entryRequestModel.Type == EntryType.file && !string.IsNullOrEmpty(entryRequestModel.Value))
+            if(entryRequestModel.type == EntryType.file && !string.IsNullOrEmpty(entryRequestModel.value))
                 return BadRequest(this.ConstructErrorResponse("'value' is not allowed on type 'file'"));
             
-            if (entryRequestModel.Type is EntryType.text or EntryType.url && string.IsNullOrEmpty(entryRequestModel.Value))
+            if (entryRequestModel.type is EntryType.text or EntryType.url && string.IsNullOrEmpty(entryRequestModel.value))
                 return BadRequest(this.ConstructErrorResponse("Value must be specified on types 'text' and 'url'"));
             
-            if(entryRequestModel.Type == EntryType.url && !entryRequestModel.Value.ValidateUri())
+            if(entryRequestModel.type == EntryType.url && !entryRequestModel.value.ValidateUri())
                 return BadRequest(this.ConstructErrorResponse("Value is not a valid URI (http(s))"));
 
-            string slug = entryRequestModel.Slug;
+            string slug = entryRequestModel.slug;
             string deletionCode = StringUtils.CreateSlug(10);
             
             while (slug == null)
@@ -94,15 +94,16 @@ namespace general_shortener.Controllers
             Entry entry = new Entry()
             {
                 Slug = slug,
-                Type = entryRequestModel.Type,
+                Type = entryRequestModel.type,
                 DeletionCode = deletionCode,
-                Value = entryRequestModel.Value,
+                Value = entryRequestModel.value,
             };
 
-            if (entryRequestModel.Type == EntryType.file)
+            if (entryRequestModel.type == EntryType.file)
             {
-                IFormFile file = entryRequestModel.File;
-                this._directoryService.SaveFile(file, slug);
+                IFormFile file = entryRequestModel.file;
+                entry.Meta.Filename = this._directoryService.SaveFile(file, slug);
+                entry.Meta.OriginalFilename = file.FileName;
                 entry.Meta.Mime = this._directoryService.GuessMimetype(file.FileName);
                 entry.Meta.Size = file.Length;
             }
@@ -125,8 +126,8 @@ namespace general_shortener.Controllers
         [TypedAuthorize(Claim.entries_list)]
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
         [Produces("application/json")]
         public BaseResponse<EntryInfoResponseModel[]> GetEntries([FromQuery] EntriesRequestModel requestModel)
         {
@@ -141,9 +142,9 @@ namespace general_shortener.Controllers
         [TypedAuthorize(Claim.entry_info)]
         [HttpGet("{slug}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public BaseResponse<EntryInfoResponseModel> GetEntryInfo(string slug)
         {
@@ -157,9 +158,9 @@ namespace general_shortener.Controllers
         [TypedAuthorize(Claim.entries_delete)]
         [HttpDelete("{slug}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public BaseResponse<EmptyResponse> DeleteEntry(string slug)
         {
