@@ -41,7 +41,27 @@ namespace general_shortener.Models.Entry
         /// Value of the Entry, if it isn't a file
         /// </summary>
         public string Value { get; set; }
-        
+
+        /// <summary>
+        /// Entry metadata
+        /// </summary>
+        public EntryMetadata Meta { get; set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Entry()
+        {
+            this.Id = ObjectId.GenerateNewId();
+            this.Meta = new EntryMetadata();
+        }
+    }
+
+    /// <summary>
+    /// Entry metadata
+    /// </summary>
+    public class EntryMetadata
+    {
         /// <summary>
         /// If entry is a file, size of the file
         /// </summary>
@@ -51,18 +71,10 @@ namespace general_shortener.Models.Entry
         /// Mimetype of the entry if entry is a file
         /// </summary>
         public string Mime { get; set; }
-
+        
         /// <summary>
         /// Owner of the entry
         /// </summary>
         public ObjectId Owner { get; set; }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public Entry()
-        {
-            this.Id = ObjectId.GenerateNewId();
-        }
     }
 }

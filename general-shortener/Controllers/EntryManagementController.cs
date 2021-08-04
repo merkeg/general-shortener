@@ -91,7 +91,7 @@ namespace general_shortener.Controllers
                 Slug = slug,
                 Type = entryRequestModel.Type,
                 DeletionCode = deletionCode,
-                Value = entryRequestModel.Value
+                Value = entryRequestModel.Value,
             };
 
             await this._entries.ReplaceOneAsync( filter: f => f.Slug == slug, options: new ReplaceOptions() {IsUpsert = true}, replacement: entry);
