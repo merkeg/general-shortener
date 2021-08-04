@@ -21,24 +21,24 @@ namespace general_shortener.Models.Entry
         [Required]
         [EnumDataType(typeof(EntryType))]
         [JsonConverter(typeof(StringEnumConverter))]
-        public EntryType Type { get; set; }
+        public EntryType type { get; set; }
         
         /// <summary>
         /// Value of the new entry
         /// </summary>
         [MaxLength(1024)]
-        public string Value { get; set; }
+        public string value { get; set; }
         
         /// <summary>
         /// Custom slug for entry
         /// </summary>
         [Range(1, 128)]
-        public string Slug { get; set; }
+        public string slug { get; set; }
 
         /// <summary>
         /// File to upload
         /// </summary>
-        public IFormFile File { get; set; }
+        public IFormFile file { get; set; }
     }
 
 

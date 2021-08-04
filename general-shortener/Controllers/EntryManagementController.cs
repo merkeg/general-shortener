@@ -63,19 +63,19 @@ namespace general_shortener.Controllers
         public async Task<IActionResult> NewEntry([FromForm] NewEntryRequestModel entryRequestModel)
         {
 
-            if (entryRequestModel.Type == EntryType.file && entryRequestModel.File == null)
+            if (entryRequestModel.type == EntryType.file && entryRequestModel.file == null)
                 return BadRequest(this.ConstructErrorResponse("File must be given on type 'file'"));
             
-            if(entryRequestModel.Type == EntryType.file && !string.IsNullOrEmpty(entryRequestModel.Value))
+            if(entryRequestModel.type == EntryType.file && !string.IsNullOrEmpty(entryRequestModel.value))
                 return BadRequest(this.ConstructErrorResponse("'value' is not allowed on type 'file'"));
             
-            if (entryRequestModel.Type is EntryType.text or EntryType.url && string.IsNullOrEmpty(entryRequestModel.Value))
+            if (entryRequestModel.type is EntryType.text or EntryType.url && string.IsNullOrEmpty(entryRequestModel.value))
                 return BadRequest(this.ConstructErrorResponse("Value must be specified on types 'text' and 'url'"));
             
-            if(entryRequestModel.Type == EntryType.url && !entryRequestModel.Value.ValidateUri())
+            if(entryRequestModel.type == EntryType.url && !entryRequestModel.value.ValidateUri())
                 return BadRequest(this.ConstructErrorResponse("Value is not a valid URI (http(s))"));
 
-            string slug = entryRequestModel.Slug;
+            string slug = entryRequestModel.slug;
             string deletionCode = StringUtils.CreateSlug(10);
             
             while (slug == null)
@@ -94,15 +94,16 @@ namespace general_shortener.Controllers
             Entry entry = new Entry()
             {
                 Slug = slug,
-                Type = entryRequestModel.Type,
+                Type = entryRequestModel.type,
                 DeletionCode = deletionCode,
-                Value = entryRequestModel.Value,
+                Value = entryRequestModel.value,
             };
 
-            if (entryRequestModel.Type == EntryType.file)
+            if (entryRequestModel.type == EntryType.file)
             {
-                IFormFile file = entryRequestModel.File;
-                this._directoryService.SaveFile(file, slug);
+                IFormFile file = entryRequestModel.file;
+                entry.Meta.Filename = this._directoryService.SaveFile(file, slug);
+                entry.Meta.OriginalFilename = file.FileName;
                 entry.Meta.Mime = this._directoryService.GuessMimetype(file.FileName);
                 entry.Meta.Size = file.Length;
             }

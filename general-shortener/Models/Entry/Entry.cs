@@ -73,6 +73,16 @@ namespace general_shortener.Models.Entry
         public string Mime { get; set; }
         
         /// <summary>
+        /// Local filename of the entry
+        /// </summary>
+        public string Filename { get; set; }
+        
+        /// <summary>
+        /// Original filename from the request
+        /// </summary>
+        public string OriginalFilename { get; set; }
+        
+        /// <summary>
         /// Owner of the entry
         /// </summary>
         public ObjectId Owner { get; set; }
