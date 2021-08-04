@@ -14,9 +14,9 @@ namespace general_shortener.Extensions
         /// <param name="controller"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static BaseResponse<ErrorResponse> ConstructErrorResponse(this Controller controller, string message)
+        public static BaseResponse<MessageResponse> ConstructErrorResponse(this Controller controller, string message)
         {
-            return ConstructResponse(controller, StatusType.error, new ErrorResponse()
+            return ConstructResponse(controller, StatusType.error, new MessageResponse()
             {
                 Message = message
             });

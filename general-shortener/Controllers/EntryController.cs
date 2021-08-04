@@ -44,7 +44,7 @@ namespace general_shortener.Controllers
         [HttpGet("{slug}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status302Found)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public async Task<IActionResult> GetEntry(string slug, [FromQuery] GetEntryRequestModel requestModel)
         {
@@ -71,18 +71,26 @@ namespace general_shortener.Controllers
         /// <param name="slug">Slug of the entry you want to delete</param>
         /// <param name="deletionCode">Deletion code of the slug you got on the creation of the entry</param>
         [HttpGet("{slug}/{deletionCode}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public async Task<IActionResult> DeleteEntryCode(string slug, string deletionCode)
         {
             List<Entry> entries = this._entries.Find(f => f.Slug == slug).ToList();
             if (entries.Count == 0) 
                 return BadRequest(this.ConstructErrorResponse("Entry with given slug not found"));
-
-
-            return Ok();
+            Entry entry = entries.First();
+            
+            if(deletionCode != entry.DeletionCode)
+                return Unauthorized(this.ConstructErrorResponse("Deletion code wrong"));
+        
+            await this._entries.DeleteOneAsync(f => f.Slug == entry.Slug);
+            this._directoryService.DeleteFile(entry);
+            return Ok(this.ConstructSuccessResponse(new MessageResponse()
+            {
+                Message = "Entry deleted"
+            }));
         }
 
     }

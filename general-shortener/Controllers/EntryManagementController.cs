@@ -55,7 +55,7 @@ namespace general_shortener.Controllers
         [TypedAuthorize(Claim.entries_new)]
         [HttpPost()]
         [ProducesResponseType(typeof(BaseResponse<NewEntryResponseModel>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [Produces("application/json")]
@@ -126,8 +126,8 @@ namespace general_shortener.Controllers
         [TypedAuthorize(Claim.entries_list)]
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
         [Produces("application/json")]
         public BaseResponse<EntryInfoResponseModel[]> GetEntries([FromQuery] EntriesRequestModel requestModel)
         {
@@ -142,9 +142,9 @@ namespace general_shortener.Controllers
         [TypedAuthorize(Claim.entry_info)]
         [HttpGet("{slug}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public BaseResponse<EntryInfoResponseModel> GetEntryInfo(string slug)
         {
@@ -158,9 +158,9 @@ namespace general_shortener.Controllers
         [TypedAuthorize(Claim.entries_delete)]
         [HttpDelete("{slug}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public BaseResponse<EmptyResponse> DeleteEntry(string slug)
         {

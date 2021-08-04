@@ -102,5 +102,17 @@ namespace general_shortener.Services
             response.Headers.Add("Content-Range", $"bytes {start}-{end}/{total}");
             await response.SendFileAsync(Path.Combine(this._options.Path, entry.Meta.Filename));
         }
+
+        /// <inheritdoc />
+        public void DeleteFile(string fileName)
+        {
+            File.Delete(Path.Combine(this._options.Path, fileName));
+        }
+
+        /// <inheritdoc />
+        public void DeleteFile(Entry entry)
+        {
+            DeleteFile(entry.Meta.Filename);
+        }
     }
 }

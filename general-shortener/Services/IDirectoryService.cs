@@ -32,5 +32,18 @@ namespace general_shortener.Services
         /// <param name="response"></param>
         /// <param name="forceDownload">Force media download</param>
         public Task HandleFileStream(Entry entry, HttpRequest request, HttpResponse response, bool forceDownload = false);
+
+        /// <summary>
+        /// Deletes a file
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void DeleteFile(string fileName);
+
+        /// <summary>
+        /// Deletes a file
+        /// </summary>
+        /// <param name="entry"></param>
+        public void DeleteFile(Entry entry);
+
     }
 }
