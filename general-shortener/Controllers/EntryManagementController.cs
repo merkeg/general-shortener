@@ -29,6 +29,7 @@ namespace general_shortener.Controllers
         [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(BaseResponse<ErrorResponse>),StatusCodes.Status403Forbidden)]
         [Produces("application/json")]
+        [Consumes("application/json", "multipart/form-data")]
         public BaseResponse<NewEntryResponseModel> NewEntry([FromForm] NewEntryRequestModel entryRequestModel)
         {
             return null;
