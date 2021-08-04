@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using general_shortener.Bootstraps;
 using general_shortener.Filters;
 using general_shortener.Models.Authentication;
+using general_shortener.Services;
 using general_shortener.Services.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,6 +41,8 @@ namespace general_shortener
             services.AddAuthenticationBootstrap();
             services.AddOptionsBindingBootstrap(this.Configuration);
             services.AddMongoDbBootstrap(this.Configuration);
+            
+            
             
             services.AddControllers().AddJsonOptions(options =>
             {
