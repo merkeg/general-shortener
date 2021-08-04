@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using general_shortener.Bootstraps;
 using general_shortener.Filters;
 using general_shortener.Models.Authentication;
 using general_shortener.Services.Authentication;
@@ -35,6 +36,11 @@ namespace general_shortener
         {
 
             services.AddHealthChecks();
+            services.AddSwaggerBootstrap();
+            services.AddAuthenticationBootstrap();
+            services.AddOptionsBindingBootstrap(this.Configuration);
+            services.AddMongoDbBootstrap(this.Configuration);
+            
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -46,71 +52,6 @@ namespace general_shortener
                 config.DefaultApiVersion = new ApiVersion(1, 0);
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
-            });
-
-            var xmlCommentPath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-            var documentationPath = Path.Combine(AppContext.BaseDirectory, "Resources\\documentation.md");
-            var documentation = File.ReadAllText(documentationPath);
-            
-            services.AddSwaggerGen(c =>
-            {
-                
-                
-                c.IncludeXmlComments(xmlCommentPath);
-                c.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "general-shortener",
-                Version = "v1",
-                Description = documentation,
-                Contact = new OpenApiContact()
-                {
-                    Name = "Egor Merk",
-                    Email = "contact@merkeg.de",
-                    Url = new Uri("https://twitter.com/merkegor")
-                }
-            });
-                
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "Api key that is using the Bearer scheme",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-                
-                c.OperationFilter<AuthOperationFilter>();
-                
-                // c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                // {
-                //     {
-                //         new OpenApiSecurityScheme
-                //         {
-                //             Reference = new OpenApiReference
-                //             {
-                //                 Type = ReferenceType.SecurityScheme,
-                //                 Id = "Bearer"
-                //             },
-                //             Scheme = "oauth2",
-                //             Name = "Bearer",
-                //             In = ParameterLocation.Header,
-                //
-                //         },
-                //         new List<string>()
-                //     }
-                // });
-            });
-
-            services.AddAuthentication("Bearer")
-                .AddScheme<ApiAuthenticationHandlerOptions, ApiAuthenticationHandler>("Bearer", null);
-            services.AddSingleton<IApiAuthenticationManager, ApiKeyAuthenticationManager>();
-
-            services.AddAuthorization(config =>
-            {
-                foreach (var claim in Enum.GetNames<Claim>())
-                {
-                    config.AddPolicy(claim, builder => builder.RequireClaim(claim));
-                }
             });
         }
 

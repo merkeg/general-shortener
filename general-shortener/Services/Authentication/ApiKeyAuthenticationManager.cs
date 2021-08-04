@@ -9,6 +9,11 @@ namespace general_shortener.Services.Authentication
     /// <inheritdoc />
     public class ApiKeyAuthenticationManager : IApiAuthenticationManager
     {
+        /// <summary>
+        /// Verify a key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public ApiKeyModel VerifyKey(string key)
         {
             if (key == "aaa")
