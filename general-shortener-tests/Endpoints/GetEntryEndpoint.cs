@@ -7,20 +7,20 @@ using Xunit.Extensions.Ordering;
 
 namespace general_shortener_tests.Endpoints
 {
-    public class GetEntryEndpoint : IClassFixture<IntegrationTest>
+    public class GetEntryEndpoint : IClassFixture<IntegrationTestFixture>
     {
-        private readonly IntegrationTest _integrationTest;
+        private readonly IntegrationTestFixture _integrationTestFixture;
 
-        public GetEntryEndpoint(IntegrationTest integrationTest)
+        public GetEntryEndpoint(IntegrationTestFixture integrationTestFixture)
         {
-            _integrationTest = integrationTest;
+            _integrationTestFixture = integrationTestFixture;
         }
 
 
         [Fact, Order(1)]
         public async void GetNotExistantEntry()
         {
-            HttpResponseMessage message = await _integrationTest.TestClient.GetAsync("/jsndbgjksdng");
+            HttpResponseMessage message = await _integrationTestFixture.TestClient.GetAsync("/jsndbgjksdng");
 
             message.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }

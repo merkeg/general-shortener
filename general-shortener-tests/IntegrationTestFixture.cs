@@ -13,13 +13,13 @@ using Mongo2Go;
 
 namespace general_shortener_tests
 {
-    public class IntegrationTest : IDisposable
+    public class IntegrationTestFixture : IDisposable
     {
         
         internal readonly MongoDbRunner _mongoRunner;
         internal readonly HttpClient TestClient;
         
-        public IntegrationTest()
+        public IntegrationTestFixture()
         {
             this._mongoRunner = MongoDbRunner.Start(singleNodeReplSet: true);
             
