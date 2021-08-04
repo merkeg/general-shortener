@@ -1,15 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using general_shortener.Models.Entry;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace general_shortener.Models.Data
+namespace general_shortener.Models.Entry
 {
     /// <summary>
-    /// Entry info response model
+    /// Entry model
     /// </summary>
-    public class EntryInfoResponseModel
+    public class Entry
     {
+        /// <summary>
+        /// Id of the Entry in the document.
+        /// </summary>
+        [BsonId]
+        public int Id { get; set; }
+        
         /// <summary>
         /// Entry slug
         /// </summary>
@@ -18,7 +24,6 @@ namespace general_shortener.Models.Data
         /// <summary>
         /// Type of the entry
         /// </summary>
-        [Required]
         [EnumDataType(typeof(EntryType))]
         [JsonConverter(typeof(StringEnumConverter))]
         public EntryType Type { get; set; }
@@ -37,5 +42,10 @@ namespace general_shortener.Models.Data
         /// Mimetype of the entry if entry is a file
         /// </summary>
         public string Mime { get; set; }
+        
+        /// <summary>
+        /// Owner of the entry
+        /// </summary>
+        public int Owner { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -31,6 +32,11 @@ namespace general_shortener.Models.Entry
         /// </summary>
         [Range(1, 128)]
         public string Slug { get; set; }
+
+        /// <summary>
+        /// File to upload
+        /// </summary>
+        private IFormFile File { get; set; }
     }
 
 
