@@ -66,6 +66,9 @@ namespace general_shortener.Controllers
             if (entryRequestModel.Type == EntryType.file && entryRequestModel.File == null)
                 return BadRequest(this.ConstructErrorResponse("File must be given on type 'file'"));
             
+            if(entryRequestModel.Type == EntryType.file && !string.IsNullOrEmpty(entryRequestModel.Value))
+                return BadRequest(this.ConstructErrorResponse("'value' is not allowed on type 'file'"));
+            
             if (entryRequestModel.Type is EntryType.text or EntryType.url && string.IsNullOrEmpty(entryRequestModel.Value))
                 return BadRequest(this.ConstructErrorResponse("Value must be specified on types 'text' and 'url'"));
             
