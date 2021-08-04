@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
 using general_shortener.Utils;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace general_shortener_tests.Utils
 {
-    [TestClass]
     public class StringUtilsTest
     {
-
         public static readonly List<Tuple<string, bool>> Uris = new()
         {
             new("https://docs.microsoft.com/de-de/dotnet/api/system.tuple?view=net-5.0", true),
@@ -20,30 +19,25 @@ namespace general_shortener_tests.Utils
             new("www.youtube.com", false),
             new("Wie geht es dir?", false),
         };
-        
-        [TestMethod]
+
+        [Fact]
         public void TestUris()
         {
             foreach (Tuple<string,bool> tuple in Uris)
             {
-                if (tuple.Item2)
-                {
-                    Assert.IsTrue(tuple.Item1.ValidateUri());
-                }
-                else
-                {
-                    Assert.IsFalse(tuple.Item1.ValidateUri());
-                }
+                tuple.Item1.ValidateUri().Should().Be(tuple.Item2);
             }
         }
-
-        [TestMethod]
+        
+        [Fact]
         public void TestSlugGeneration()
         {
             for (int i = 1; i < 20; i++)
             {
-                Assert.IsTrue(StringUtils.CreateSlug(i).Length == i);
+                StringUtils.CreateSlug(i).Length.Should().Be(i);
             }
         }
+        
+        
     }
 }

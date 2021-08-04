@@ -50,7 +50,7 @@ namespace general_shortener.Controllers
         {
             List<Entry> entries = this._entries.Find(f => f.Slug == slug).ToList();
             if (entries.Count == 0) 
-                return BadRequest(this.ConstructErrorResponse("Entry with given slug not found"));
+                return NotFound(this.ConstructErrorResponse("Entry with given slug not found"));
             
             Entry entry = entries.First();
             EntryType type = entry.Type;
