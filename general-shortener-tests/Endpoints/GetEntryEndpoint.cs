@@ -21,7 +21,6 @@ namespace general_shortener_tests.Endpoints
         [Fact, Order(1)]
         public async void GetNotExistantEntry()
         {
-            Console.WriteLine("HALOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             HttpResponseMessage message = await _integrationTestFixture.TestClient.GetAsync("/jsndbgjksdng");
 
             message.StatusCode.Should().Be(HttpStatusCode.NotFound);
