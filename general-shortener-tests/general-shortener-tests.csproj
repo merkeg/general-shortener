@@ -28,4 +28,15 @@
       <ProjectReference Include="..\general-shortener\general-shortener.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="appsettings.json" />
+      <EmbeddedResource Include="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Resources" />
+    </ItemGroup>
+
 </Project>

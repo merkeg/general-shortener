@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using general_shortener;
 using general_shortener.Models.Options;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,7 @@ namespace general_shortener_tests
             WebApplicationFactory<Startup> applicationFactory = new WebApplicationFactory<Startup>();
             applicationFactory.WithWebHostBuilder(builder =>
             {
+                builder.UseEnvironment("Testing");
                 builder.ConfigureAppConfiguration((webhostBuilder, config) =>
                 {
                     webhostBuilder.Configuration = configuration;

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using general_shortener.Extensions;
 using general_shortener.Filters;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
@@ -16,11 +18,19 @@ namespace general_shortener.Bootstraps
         /// Add Swagger configuration to the service init
         /// </summary>
         /// <param name="services"></param>
-        public static void AddSwaggerBootstrap(this IServiceCollection services)
+        /// <param name="env"></param>
+        public static void AddSwaggerBootstrap(this IServiceCollection services, IWebHostEnvironment env)
         {
             var xmlCommentPath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-            var documentationPath = Path.Combine(AppContext.BaseDirectory, "Resources\\documentation.md");
-            var documentation = File.ReadAllText(documentationPath);
+            string documentation = "Testing environment";
+
+            if (!env.IsTesting())
+            {
+                var documentationPath = Path.Combine(AppContext.BaseDirectory, "Resources\\documentation.md");
+                documentation = File.ReadAllText(documentationPath);
+            } 
+            
+            
             
             services.AddSwaggerGen(c =>
             {
