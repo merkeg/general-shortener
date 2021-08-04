@@ -41,7 +41,8 @@ namespace general_shortener
             services.AddAuthenticationBootstrap();
             services.AddOptionsBindingBootstrap(this.Configuration);
             services.AddMongoDbBootstrap(this.Configuration);
-            
+
+            services.AddSingleton<IDirectoryService, DirectoryService>();
             
             
             services.AddControllers().AddJsonOptions(options =>

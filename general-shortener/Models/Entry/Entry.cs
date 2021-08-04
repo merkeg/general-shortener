@@ -65,7 +65,7 @@ namespace general_shortener.Models.Entry
         /// <summary>
         /// If entry is a file, size of the file
         /// </summary>
-        public uint Size { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// Mimetype of the entry if entry is a file

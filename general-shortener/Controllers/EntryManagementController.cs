@@ -30,6 +30,7 @@ namespace general_shortener.Controllers
     public class EntryManagementController : Controller
     {
         private readonly ILogger<EntryManagementController> _logger;
+        private readonly IDirectoryService _directoryService;
 
         private readonly IMongoCollection<Entry> _entries;
         private readonly string _baseUrl;
@@ -38,9 +39,10 @@ namespace general_shortener.Controllers
         /// <summary>
         /// Constructor
         /// </summary>
-        public EntryManagementController(IMongoDatabase mongoDatabase, ILogger<EntryManagementController> logger, IConfiguration configuration)
+        public EntryManagementController(IMongoDatabase mongoDatabase, ILogger<EntryManagementController> logger, IConfiguration configuration, IDirectoryService directoryService)
         {
             _logger = logger;
+            _directoryService = directoryService;
             this._entries = mongoDatabase.GetCollection<Entry>(Entry.Collection);
             this._baseUrl = configuration.GetValue<string>("BaseUrl");
         }
@@ -93,6 +95,14 @@ namespace general_shortener.Controllers
                 DeletionCode = deletionCode,
                 Value = entryRequestModel.Value,
             };
+
+            if (entryRequestModel.Type == EntryType.file)
+            {
+                IFormFile file = entryRequestModel.File;
+                this._directoryService.SaveFile(file, slug);
+                entry.Meta.Mime = this._directoryService.GuessMimetype(file.FileName);
+                entry.Meta.Size = file.Length;
+            }
 
             await this._entries.ReplaceOneAsync( filter: f => f.Slug == slug, options: new ReplaceOptions() {IsUpsert = true}, replacement: entry);
             string accessUrl = Flurl.Url.Combine(this._baseUrl, entry.Slug);
