@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using general_shortener;
 using general_shortener.Models.Options;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Mongo2Go;
 
 namespace general_shortener_tests
@@ -30,10 +29,7 @@ namespace general_shortener_tests
             applicationFactory.WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("Testing");
-                builder.ConfigureAppConfiguration((webhostBuilder, config) =>
-                {
-                    webhostBuilder.Configuration = configuration;
-                });
+                builder.UseConfiguration(configuration);
 
                 builder.ConfigureTestServices(services =>
                 {
@@ -44,8 +40,6 @@ namespace general_shortener_tests
                 });
             });
             this.TestClient = applicationFactory.CreateClient();
-            
-            
         }
 
         public void AuthenticateAsync()
