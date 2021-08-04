@@ -23,13 +23,13 @@ namespace general_shortener_tests
         {
             this._mongoRunner = MongoDbRunner.Start(singleNodeReplSet: true);
             
-            IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             
             WebApplicationFactory<Startup> applicationFactory = new WebApplicationFactory<Startup>();
             applicationFactory.WithWebHostBuilder(builder =>
             {
+                Console.WriteLine("I AM HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
                 builder.UseEnvironment("Testing");
-                builder.UseConfiguration(configuration);
+                builder.UseConfiguration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build());
 
                 builder.ConfigureTestServices(services =>
                 {
@@ -39,6 +39,7 @@ namespace general_shortener_tests
                     });
                 });
             });
+            
             this.TestClient = applicationFactory.CreateClient();
         }
 
