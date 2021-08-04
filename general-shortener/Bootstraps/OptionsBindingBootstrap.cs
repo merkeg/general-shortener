@@ -17,6 +17,7 @@ namespace general_shortener.Bootstraps
         public static void AddOptionsBindingBootstrap(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<MongoDbOptions>(configuration.GetSection(MongoDbOptions.Section));
+            services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.Section));
         }
     }
 }
