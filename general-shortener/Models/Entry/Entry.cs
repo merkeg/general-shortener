@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -11,10 +12,15 @@ namespace general_shortener.Models.Entry
     public class Entry
     {
         /// <summary>
+        /// Name of the collection
+        /// </summary>
+        public const string Collection = "entries";
+        
+        /// <summary>
         /// Id of the Entry in the document.
         /// </summary>
         [BsonId]
-        public int Id { get; set; }
+        public ObjectId Id { get; set; }
         
         /// <summary>
         /// Entry slug
@@ -22,22 +28,45 @@ namespace general_shortener.Models.Entry
         public string Slug { get; set; }
         
         /// <summary>
-        /// Type of the entry
-        /// </summary>
-        [EnumDataType(typeof(EntryType))]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public EntryType Type { get; set; }
-        
-        /// <summary>
-        /// If entry is a file, size of the file
-        /// </summary>
-        public uint Size { get; set; }
-        
-        /// <summary>
         /// Deletion code of the resource if needed
         /// </summary>
         public string DeletionCode { get; set; }
         
+        /// <summary>
+        /// Type of the entry
+        /// </summary>
+        public EntryType Type { get; set; }
+        
+        /// <summary>
+        /// Value of the Entry, if it isn't a file
+        /// </summary>
+        public string Value { get; set; }
+
+        /// <summary>
+        /// Entry metadata
+        /// </summary>
+        public EntryMetadata Meta { get; set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Entry()
+        {
+            this.Id = ObjectId.GenerateNewId();
+            this.Meta = new EntryMetadata();
+        }
+    }
+
+    /// <summary>
+    /// Entry metadata
+    /// </summary>
+    public class EntryMetadata
+    {
+        /// <summary>
+        /// If entry is a file, size of the file
+        /// </summary>
+        public long Size { get; set; }
+
         /// <summary>
         /// Mimetype of the entry if entry is a file
         /// </summary>
@@ -46,6 +75,6 @@ namespace general_shortener.Models.Entry
         /// <summary>
         /// Owner of the entry
         /// </summary>
-        public int Owner { get; set; }
+        public ObjectId Owner { get; set; }
     }
 }

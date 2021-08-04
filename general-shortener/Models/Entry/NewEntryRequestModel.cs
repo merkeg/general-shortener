@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using general_shortener.Filters;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -28,7 +30,7 @@ namespace general_shortener.Models.Entry
         public string Value { get; set; }
         
         /// <summary>
-        /// Custom slug for entry, if entry with specified slug already exists, it will be overwritten and gives an 200 instead of an 201
+        /// Custom slug for entry
         /// </summary>
         [Range(1, 128)]
         public string Slug { get; set; }
@@ -36,7 +38,7 @@ namespace general_shortener.Models.Entry
         /// <summary>
         /// File to upload
         /// </summary>
-        private IFormFile File { get; set; }
+        public IFormFile File { get; set; }
     }
 
 
