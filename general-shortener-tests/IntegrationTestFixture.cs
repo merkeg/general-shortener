@@ -23,7 +23,7 @@ namespace general_shortener_tests
         {
             this._mongoRunner = MongoDbRunner.Start(singleNodeReplSet: true);
             
-            
+            Console.WriteLine("BIG LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
             WebApplicationFactory<Startup> applicationFactory = new WebApplicationFactory<Startup>();
             applicationFactory.WithWebHostBuilder(builder =>
             {
