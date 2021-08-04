@@ -1,6 +1,7 @@
 ﻿using System;
 using general_shortener.Models.Authentication;
 using general_shortener.Services.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace general_shortener.Bootstraps

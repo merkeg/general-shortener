@@ -75,9 +75,14 @@ namespace general_shortener.Controllers
         [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(BaseResponse<ErrorResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public BaseResponse<EmptyResponse> DeleteEntryCode(string slug, string deletionCode)
+        public async Task<IActionResult> DeleteEntryCode(string slug, string deletionCode)
         {
-            return null;
+            List<Entry> entries = this._entries.Find(f => f.Slug == slug).ToList();
+            if (entries.Count == 0) 
+                return BadRequest(this.ConstructErrorResponse("Entry with given slug not found"));
+
+
+            return Ok();
         }
 
     }
