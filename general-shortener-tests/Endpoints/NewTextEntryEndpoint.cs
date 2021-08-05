@@ -17,15 +17,13 @@ using Xunit.Extensions.Ordering;
 namespace general_shortener_tests.Endpoints
 {
     [CollectionDefinition("Create and get an url entry")]
-    public class NewTextEntryEndpoint : IClassFixture<IntegrationTestFixture>, IClassFixture<ObjectBearer<BaseResponse<NewEntryResponseModel>>>
+    public class NewTextEntryEndpoint : IClassFixture<IntegrationTestFixture>
     {
         private readonly IntegrationTestFixture _integrationTestFixture;
-        private readonly ObjectBearer<BaseResponse<NewEntryResponseModel>> _objectBearer;
 
-        public NewTextEntryEndpoint(IntegrationTestFixture integrationTestFixture, ObjectBearer<BaseResponse<NewEntryResponseModel>> objectBearer)
+        public NewTextEntryEndpoint(IntegrationTestFixture integrationTestFixture)
         {
             _integrationTestFixture = integrationTestFixture;
-            _objectBearer = objectBearer;
         }
         
 
@@ -45,7 +43,7 @@ namespace general_shortener_tests.Endpoints
             message.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
         
-        [Fact, Order(0)]
+        [Fact, Order(1)]
         public async void CreateNewEntryWrongToken()
         {
             await _integrationTestFixture.LogoutAsync();
@@ -64,7 +62,7 @@ namespace general_shortener_tests.Endpoints
         }
         
         
-        [Fact, Order(1)]
+        [Fact, Order(2)]
         public async void CreateNewEntryUnsupported()
         {
             await _integrationTestFixture.AuthenticateAsync();
@@ -80,7 +78,7 @@ namespace general_shortener_tests.Endpoints
             message.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
         }
         
-        [Fact, Order(2)]
+        [Fact, Order(3)]
         public async void CreateNewEntryCreated()
         {
             await _integrationTestFixture.AuthenticateAsync();
@@ -92,14 +90,13 @@ namespace general_shortener_tests.Endpoints
             
             HttpResponseMessage message = await _integrationTestFixture.TestClient.PostAsync("/entries", HttpUtils.ConstructFormDataContent(requestModel));
             BaseResponse<NewEntryResponseModel> responseModel = await message.Content.ReadAsAsync<BaseResponse<NewEntryResponseModel>>();
-            this._objectBearer.Object = responseModel;
-            
-            
+
+
             message.StatusCode.Should().Be(HttpStatusCode.Created);
             responseModel.Should().NotBe(null);
         }
         
-        [Theory, Order(3)]
+        [Theory, Order(4)]
         [InlineData("https://docs.microsoft.com/de-de/dotnet/api/system.tuple?view=net-5.0", true)]
         [InlineData("https://github.com/merkeg/general-shortener", true)]
         [InlineData("https://localhost:5001/rWQBl8", true)]
@@ -125,7 +122,7 @@ namespace general_shortener_tests.Endpoints
 
 
         
-        [Theory, Order(4)]
+        [Theory, Order(5)]
         [InlineData("https://www.google.com/")]
         public async void GetEntry(string uri)
         {

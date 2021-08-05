@@ -12,7 +12,7 @@
   },
   "Storage": {
     "Driver": "local",
-    "Path": "C:\\Egor\\uploads"
+    "Path": "/tmp/"
   },
   "MasterToken": "i_am_a_secure_token",
   "BaseUrl": "https://localhost"

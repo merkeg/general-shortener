@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -19,6 +20,11 @@ namespace general_shortener_tests
                     continue;
                 multipartFormDataContent.Add(new StringContent(item.Value), String.Format("\"{0}\"", item.Key));
             }
+
+            if (filePath != null)
+            {
+                multipartFormDataContent.Add(new ByteArrayContent(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, filePath))), "\"file\"", Path.GetFileName(filePath));
+            }
             
             return multipartFormDataContent;
         }
@@ -35,5 +41,6 @@ namespace general_shortener_tests
             var dictionary = JsonConvert.DeserializeObject<Dictionary<string, TValue>>(json);   
             return dictionary;
         }
+        
     }
 }

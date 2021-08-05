@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -39,6 +40,7 @@ namespace general_shortener_tests
             builder.UseEnvironment("Testing");
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddJsonFile("integrationsettings.json").Build();
 
+            
             builder.ConfigureAppConfiguration(config =>
             {
                 config.AddConfiguration(configurationRoot);
@@ -46,7 +48,11 @@ namespace general_shortener_tests
             
             builder.ConfigureTestServices(services =>
             {
-                
+                services.Configure<StorageOptions>(options =>
+                {
+                    options.Path = Path.GetTempPath();
+                });
+
                 // TODO: VERY DIRTY IMPLEMENTATION, BUT I AM TOO STUPID TO KNOW ANOTHER WAY
 
                 services.RemoveAll(typeof(IMongoClient));
