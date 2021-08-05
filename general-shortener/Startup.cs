@@ -60,7 +60,6 @@ namespace general_shortener
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
             });
-            services.AddMvc();
 
         }
 
