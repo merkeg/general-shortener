@@ -1,9 +1,7 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using FluentAssertions;
 using general_shortener.Models.Entry;
-using MongoDB.Bson;
 using Xunit;
 using Xunit.Extensions.Ordering;
 

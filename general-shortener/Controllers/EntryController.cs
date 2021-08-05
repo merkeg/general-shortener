@@ -5,7 +5,6 @@ using general_shortener.Extensions;
 using general_shortener.Models;
 using general_shortener.Models.Entry;
 using general_shortener.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;

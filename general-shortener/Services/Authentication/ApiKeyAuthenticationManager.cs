@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using general_shortener.Models.Authentication;
 using Microsoft.Extensions.Configuration;
 using Claim = general_shortener.Models.Authentication.Claim;
