@@ -60,8 +60,8 @@ namespace general_shortener
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
             });
-            services.AddRazorPages();
-            
+            services.AddMvc();
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -85,7 +85,6 @@ namespace general_shortener
             
             app.UseHttpsRedirection();
             
-            app.UseStaticFiles();
             
             app.UseRouting();
             
