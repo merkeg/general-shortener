@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mime;
 using System.Security;
 using System.Threading;
@@ -81,7 +82,7 @@ namespace general_shortener.Controllers
             while (slug == null)
             {
                 slug = StringUtils.CreateSlug(6);
-                List<Entry> entries = this._entries.Find(f => f.Slug == slug).ToList();
+                List<Entry> entries = (await this._entries.FindAsync(f => f.Slug == slug)).ToList();
                 if (entries.Count != 0)
                 {
                     slug = null;
@@ -125,15 +126,35 @@ namespace general_shortener.Controllers
         /// </summary>
         [TypedAuthorize(Claim.entries_list)]
         [HttpGet()]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<EntryInfoResponseModel[]>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
         [Produces("application/json")]
-        public BaseResponse<EntryInfoResponseModel[]> GetEntries([FromQuery] EntriesRequestModel requestModel)
+        public async Task<IActionResult> GetEntries([FromQuery] EntriesRequestModel requestModel)
         {
-            return null;
+            List<Entry> entries = await (await this._entries.FindAsync(_ => true, new FindOptions<Entry>()
+            {
+                Limit = requestModel.limit,
+                Skip = requestModel.offset
+            })).ToListAsync();
+
+            List<EntryInfoResponseModel> entriesResponse = new List<EntryInfoResponseModel>();
+
+            foreach (Entry entry in entries)
+            {
+                entriesResponse.Add(new EntryInfoResponseModel()
+                {
+                    Slug = entry.Slug,
+                    Type = entry.Type,
+                    DeletionCode = entry.DeletionCode,
+                    Mime = entry.Meta.Mime,
+                    Size = entry.Meta.Size
+                });
+            }
+            
+            return Ok(this.ConstructSuccessResponse(entriesResponse.ToArray()));
         }
-        
+
         /// <summary>
         /// Get information about a resource
         /// </summary>
@@ -141,14 +162,31 @@ namespace general_shortener.Controllers
         
         [TypedAuthorize(Claim.entry_info)]
         [HttpGet("{slug}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<EntryInfoResponseModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public BaseResponse<EntryInfoResponseModel> GetEntryInfo(string slug)
+        public async Task<IActionResult> GetEntryInfo(string slug)
         {
-            return null;
+            if (string.IsNullOrEmpty(slug))
+                return BadRequest(this.ConstructErrorResponse("Invalid slug"));
+
+            List<Entry> entries = (await (await this._entries.FindAsync(f => f.Slug == slug)).ToListAsync());
+            
+            if(entries.Count == 0)
+                return NotFound(this.ConstructErrorResponse("Entry with given slug not found"));
+
+            Entry entry = entries.First();
+            
+            return Ok(this.ConstructSuccessResponse(new EntryInfoResponseModel()
+            {
+                Slug = entry.Slug,
+                Type = entry.Type,
+                DeletionCode = entry.DeletionCode,
+                Mime = entry.Meta.Mime,
+                Size = entry.Meta.Size
+            }));
         }
         
         /// <summary>
@@ -157,14 +195,32 @@ namespace general_shortener.Controllers
         /// <param name="slug">Slug of the entry you want to delete</param>
         [TypedAuthorize(Claim.entries_delete)]
         [HttpDelete("{slug}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(BaseResponse<MessageResponse>),StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(BaseResponse<MessageResponse>), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public BaseResponse<EmptyResponse> DeleteEntry(string slug)
+        public async Task<IActionResult> DeleteEntry(string slug)
         {
-            return null;
+            if (string.IsNullOrEmpty(slug))
+                return BadRequest(this.ConstructErrorResponse("Invalid slug"));
+
+            List<Entry> entries = await (await this._entries.FindAsync(f => f.Slug == slug)).ToListAsync();
+            
+            if(entries.Count == 0)
+                return NotFound(this.ConstructErrorResponse("Entry with given slug not found"));
+
+            Entry entry = entries.First();
+
+            if(entry.Type == EntryType.file)
+                this._directoryService.DeleteFile(entry);
+            
+            await this._entries.DeleteOneAsync(f => f.Slug == entry.Slug);
+            
+            return Ok(this.ConstructSuccessResponse(new MessageResponse()
+            {
+                Message = $"Entry with slug '{entry.Slug}' successfully deleted"
+            }));
         }
     }
 }
