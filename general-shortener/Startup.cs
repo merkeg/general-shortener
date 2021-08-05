@@ -46,7 +46,7 @@ namespace general_shortener
             services.AddMongoDbBootstrap(this.Configuration);
 
             services.AddSingleton<IDirectoryService, DirectoryService>();
-            
+            services.AddSingleton<ITransferService, TransferService>();
             
             services.AddControllers().AddJsonOptions(options =>
             {
@@ -69,7 +69,8 @@ namespace general_shortener
                 app.UseDeveloperExceptionPage();
                 
             }
-            
+
+            app.ApplicationServices.GetService<ITransferService>();
             
             // Documentation
             app.UseSwagger();
