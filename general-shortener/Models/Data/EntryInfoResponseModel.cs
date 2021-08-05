@@ -38,5 +38,10 @@ namespace general_shortener.Models.Data
         /// Mimetype of the entry if entry is a file
         /// </summary>
         public string Mime { get; set; }
+        
+        /// <summary>
+        /// Value of the entry
+        /// </summary>
+        public string Value { get; set; }
     }
 }

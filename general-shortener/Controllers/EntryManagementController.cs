@@ -148,7 +148,8 @@ namespace general_shortener.Controllers
                     Type = entry.Type,
                     DeletionCode = entry.DeletionCode,
                     Mime = entry.Meta.Mime,
-                    Size = entry.Meta.Size
+                    Size = entry.Meta.Size,
+                    Value = entry.Value
                 });
             }
             
@@ -185,7 +186,8 @@ namespace general_shortener.Controllers
                 Type = entry.Type,
                 DeletionCode = entry.DeletionCode,
                 Mime = entry.Meta.Mime,
-                Size = entry.Meta.Size
+                Size = entry.Meta.Size,
+                Value = entry.Value
             }));
         }
         

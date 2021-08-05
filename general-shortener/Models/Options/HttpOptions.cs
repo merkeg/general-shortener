@@ -1,8 +1,11 @@
-﻿namespace general_shortener.Models.Options
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace general_shortener.Models.Options
 {
     /// <summary>
     /// Http options
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class HttpOptions
     {
         /// <summary>
@@ -19,6 +22,7 @@
     /// <summary>
     /// Redirect options
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class RedirectOptions
     {
         /// <summary>
