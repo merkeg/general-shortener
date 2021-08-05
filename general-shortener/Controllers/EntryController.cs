@@ -63,8 +63,8 @@ namespace general_shortener.Controllers
                 return new EmptyResult();
             }
             
-            if (type == EntryType.text)
-                return View("TextView", entry);
+            // if (type == EntryType.text)
+            //     return View("TextView", entry);
 
             return Ok();
         }
