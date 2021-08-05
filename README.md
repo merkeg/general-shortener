@@ -21,4 +21,5 @@ This application is to shorten links, text (with markdown support) and files int
 | HTTP__Redirect__NotFound  | String | Redirect on 404                              | false    |
 | HTTP__Redirect__Root      | String | Redirect at Root                             | false    |
 | HTTP__Redirect__Deletion  | String | Redirect at Deletion                         | false    |
+
 Note: These are double underscores
