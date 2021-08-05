@@ -18,6 +18,8 @@ namespace general_shortener.Bootstraps
         {
             services.Configure<MongoDbOptions>(configuration.GetSection(MongoDbOptions.Section));
             services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.Section));
+            services.Configure<TransferOptions>(configuration.GetSection(TransferOptions.Section));
+            services.Configure<HttpOptions>(configuration.GetSection(HttpOptions.Section));
         }
     }
 }

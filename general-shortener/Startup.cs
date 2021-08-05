@@ -38,7 +38,7 @@ namespace general_shortener
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            
             services.AddHealthChecks();
             services.AddSwaggerBootstrap(_env);
             services.AddAuthenticationBootstrap();
@@ -69,6 +69,7 @@ namespace general_shortener
                 app.UseDeveloperExceptionPage();
                 
             }
+            
             
             // Documentation
             app.UseSwagger();
