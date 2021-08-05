@@ -18,7 +18,10 @@ namespace general_shortener
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+            Host.CreateDefaultBuilder(args).ConfigureAppConfiguration(config =>
+                {
+                    config.AddEnvironmentVariables(prefix: "");
+                })
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }

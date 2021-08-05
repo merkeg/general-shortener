@@ -1,4 +1,4 @@
-name: .NET testing
+name: Unit- and Integrationtesting
 
 on:
   push:

@@ -25,9 +25,12 @@ namespace general_shortener
 {
     public class Startup
     {
+        private readonly IWebHostEnvironment _env;
 
-        public Startup(IConfiguration configuration)
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+            _env = env;
             Configuration = configuration;
         }
 
@@ -35,9 +38,9 @@ namespace general_shortener
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            
             services.AddHealthChecks();
-            services.AddSwaggerBootstrap();
+            services.AddSwaggerBootstrap(_env);
             services.AddAuthenticationBootstrap();
             services.AddOptionsBindingBootstrap(this.Configuration);
             services.AddMongoDbBootstrap(this.Configuration);
@@ -66,6 +69,7 @@ namespace general_shortener
                 app.UseDeveloperExceptionPage();
                 
             }
+            
             
             // Documentation
             app.UseSwagger();

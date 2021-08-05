@@ -106,7 +106,15 @@ namespace general_shortener.Services
         /// <inheritdoc />
         public void DeleteFile(string fileName)
         {
-            File.Delete(Path.Combine(this._options.Path, fileName));
+            try
+            {
+                File.Delete(Path.Combine(this._options.Path, fileName));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error deleting file: " + fileName);
+            }
+            
         }
 
         /// <inheritdoc />
@@ -114,5 +122,6 @@ namespace general_shortener.Services
         {
             DeleteFile(entry.Meta.Filename);
         }
+        
     }
 }
