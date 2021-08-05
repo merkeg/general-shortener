@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using general_shortener;
 using general_shortener.Models.Options;
 using Microsoft.AspNetCore.Hosting;
@@ -24,17 +25,23 @@ namespace general_shortener_tests
         public IntegrationTestFixture()
         {
             this._mongoRunner = MongoDbRunner.Start(singleNodeReplSet: true);
-            this.TestClient = this.CreateClient();
+            this.TestClient = this.CreateClient(new WebApplicationFactoryClientOptions()
+            {
+                BaseAddress = this.Server.BaseAddress,
+                AllowAutoRedirect = false
+            });
+            
         }
+        
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
-            
+            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddJsonFile("integrationsettings.json").Build();
 
             builder.ConfigureAppConfiguration(config =>
             {
-                config.AddConfiguration(new ConfigurationBuilder().AddJsonFile("integrationsettings.json").Build());
+                config.AddConfiguration(configurationRoot);
             });
             
             builder.ConfigureTestServices(services =>
@@ -55,12 +62,12 @@ namespace general_shortener_tests
         
 
 
-        public void AuthenticateAsync()
+        public async Task AuthenticateAsync()
         {
             this.TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "i_am_a_secure_token");
         }
 
-        public void LogoutAsync()
+        public async Task LogoutAsync()
         {
             this.TestClient.DefaultRequestHeaders.Authorization = null;
         }
