@@ -62,7 +62,9 @@ namespace general_shortener_tests.Endpoints
             {
                 message.Content.Headers.ContentDisposition.Should().BeNull();
             }
-            
+
+            message.StatusCode.Should().Be(HttpStatusCode.OK);
+
 
         }
 
