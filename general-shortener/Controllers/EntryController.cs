@@ -59,11 +59,14 @@ namespace general_shortener.Controllers
                 return Redirect(entry.Value);
 
             if (type == EntryType.file)
+            {
                 await this._directoryService.HandleFileStream(entry, Request, Response, requestModel.download ?? false);
-
+                return new EmptyResult();
+            }
+            
             if (type == EntryType.text)
                 return View("TextView", entry);
-            
+
             return Ok();
         }
         
