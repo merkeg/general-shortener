@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+
 #pragma warning disable 1591
 
 namespace general_shortener
@@ -38,7 +39,6 @@ namespace general_shortener
 
         public void ConfigureServices(IServiceCollection services)
         {
-            
             services.AddHealthChecks();
             services.AddSwaggerBootstrap(_env);
             services.AddAuthenticationBootstrap();
@@ -60,6 +60,8 @@ namespace general_shortener
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
             });
+            services.AddRazorPages();
+            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -80,7 +82,11 @@ namespace general_shortener
                 c.SpecUrl = "/swagger/v1/swagger.json";
                 c.RoutePrefix = "docs";
             });
+            
             app.UseHttpsRedirection();
+            
+            app.UseStaticFiles();
+            
             app.UseRouting();
             
             app.UseAuthentication();

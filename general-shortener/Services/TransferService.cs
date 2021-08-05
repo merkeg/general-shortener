@@ -54,7 +54,9 @@ namespace general_shortener.Services
 
                 RedisDatabase = RedisConnection.GetDatabase();
                 logger.LogInformation("Transferring redis data to MongoDB");
+#pragma warning disable 4014
                 TransferData();
+#pragma warning restore 4014
             }
 
             

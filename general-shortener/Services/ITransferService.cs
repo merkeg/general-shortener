@@ -24,7 +24,7 @@ namespace general_shortener.Services
         public bool TransferActivated { get; }
         
         /// <summary>
-        /// Transfer data from the redis (>v1) model to the mongo (<=v1) model 
+        /// Transfer data from the redis (>v1) model to the mongo (under v1) model 
         /// </summary>
         /// <returns></returns>
         public Task TransferData();

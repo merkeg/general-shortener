@@ -26,7 +26,6 @@ namespace general_shortener.Models.Entry
         /// <summary>
         /// Value of the new entry
         /// </summary>
-        [MaxLength(1024)]
         public string value { get; set; }
         
         /// <summary>

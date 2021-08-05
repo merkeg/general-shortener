@@ -111,7 +111,7 @@ namespace general_shortener.Services
             {
                 File.Delete(Path.Combine(this._options.Path, fileName));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 _logger.LogError("Error deleting file: " + fileName);
             }
