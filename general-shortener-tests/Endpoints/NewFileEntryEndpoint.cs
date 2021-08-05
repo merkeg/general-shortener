@@ -68,5 +68,32 @@ namespace general_shortener_tests.Endpoints
 
         }
 
+        [Theory]
+        [InlineData("Resources/Files/TextDocument.txt")]
+        [InlineData("Resources/Files/image.png")]
+        [InlineData("Resources/Files/video.mp4")]
+        public async void DeleteAfterCreateAndTest(string fileName)
+        {
+            await this._integrationTestFixture.AuthenticateAsync();
+            NewEntryRequestModel requestModel = new ()
+            {
+                type = EntryType.file,
+            };
+            HttpResponseMessage response = await _integrationTestFixture.TestClient.PostAsync("/entries", HttpUtils.ConstructFormDataContent(requestModel, fileName));
+            BaseResponse<NewEntryResponseModel> responseModel = await response.Content.ReadAsAsync<BaseResponse<NewEntryResponseModel>>();
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            HttpResponseMessage deletionResponse =
+                await _integrationTestFixture.TestClient.GetAsync(responseModel.Result.DeletionUrl);
+            
+            deletionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            HttpResponseMessage testResponse =
+                await _integrationTestFixture.TestClient.GetAsync(responseModel.Result.Url);
+
+            testResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        }
+
     }
 }

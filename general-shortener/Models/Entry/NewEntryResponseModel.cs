@@ -1,4 +1,6 @@
-﻿namespace general_shortener.Models.Entry
+﻿using Newtonsoft.Json;
+
+namespace general_shortener.Models.Entry
 {
     /// <summary>
     /// Response model
@@ -13,6 +15,7 @@
         /// <summary>
         /// Url to delete the entry with an easy get request
         /// </summary>
+        [JsonProperty(PropertyName = "deletion_url")]
         public string DeletionUrl { get; set; }
     }
 }

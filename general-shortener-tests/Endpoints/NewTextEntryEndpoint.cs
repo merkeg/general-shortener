@@ -145,6 +145,37 @@ namespace general_shortener_tests.Endpoints
 
         }
         
+        [Theory, Order(6)]
+        [InlineData("https://www.google.com/")]
+        [InlineData("https://localhost:5001/rWQBl8")]
+        [InlineData("https://docs.microsoft.com/de-de/dotnet/api/system.tuple?view=net-5.0")]
+        [InlineData("https://github.com/merkeg/general-shortener")]
+        public async void GetAfterDeleteEntry(string uri)
+        {
+            await _integrationTestFixture.AuthenticateAsync();
+
+            NewEntryRequestModel requestModel = new ()
+            {
+                type = EntryType.url,
+                value = uri
+            };
+            
+            HttpResponseMessage request = await _integrationTestFixture.TestClient.PostAsync("/entries", HttpUtils.ConstructFormDataContent(requestModel));
+            BaseResponse<NewEntryResponseModel> responseModel = await request.Content.ReadAsAsync<BaseResponse<NewEntryResponseModel>>();
+
+            HttpResponseMessage firstTest = await _integrationTestFixture.TestClient.GetAsync(responseModel.Result.Url);
+            firstTest.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            firstTest.Headers.Location.ToString().Should().Be(uri);
+            
+            HttpResponseMessage deletionResponse =
+                await _integrationTestFixture.TestClient.GetAsync(responseModel.Result.DeletionUrl);
+            deletionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            
+            HttpResponseMessage secondTest = await _integrationTestFixture.TestClient.GetAsync(responseModel.Result.Url);
+            secondTest.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+
+        }
         
         
     }
