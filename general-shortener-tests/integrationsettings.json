@@ -15,5 +15,20 @@
     "Path": "/tmp/"
   },
   "MasterToken": "i_am_a_secure_token",
-  "BaseUrl": "https://localhost"
+  "BaseUrl": "https://localhost",
+  "HTTP": {
+    "Redirect": {
+      "NotFound": null,
+      "Root": null,
+      "Deletion": null
+    }
+  },
+  "Transfer": {
+    "Transfer": false,
+    "Redis": {
+      "Host": null,
+      "Port": 6379,
+      "Password": null
+    }
+  }
 }
