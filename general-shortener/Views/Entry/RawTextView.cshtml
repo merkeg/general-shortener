@@ -1,0 +1,17 @@
+﻿@using general_shortener.Utils
+@model general_shortener.Models.Entry.Entry
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Entry Text Viewer (@Model.Slug)</title>
+</head>
+<body>
+    <span style="white-space: pre-line">@Model.Value</span>
+</body>
+</html>

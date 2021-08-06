@@ -11,5 +11,11 @@
         /// </summary>
         // ReSharper disable once InconsistentNaming
         public bool? download { get; set; }
+        
+        /// <summary>
+        /// Send text data without markdown conversion
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        public bool? raw { get; set; }
     }
 }

@@ -103,6 +103,13 @@ namespace general_shortener.Controllers
                 entry.Meta.Size = file.Length;
             }
 
+            if (entryRequestModel.type == EntryType.text)
+            {
+                entry.Meta.Mime = "text/plain";
+                entry.Meta.Size = entryRequestModel.value!.Length;
+                entry.Meta.OriginalFilename = slug + ".txt";
+            }
+
             await this._entries.ReplaceOneAsync( filter: f => f.Slug == slug, options: new ReplaceOptions() {IsUpsert = true}, replacement: entry);
             string accessUrl = Flurl.Url.Combine(this._baseUrl, entry.Slug);
             string deletionUrl = Flurl.Url.Combine(accessUrl, entry.DeletionCode);

@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using general_shortener.Extensions;
 using general_shortener.Models;
 using general_shortener.Models.Entry;
+using general_shortener.Models.Options;
 using general_shortener.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace general_shortener.Controllers
@@ -20,16 +23,19 @@ namespace general_shortener.Controllers
     {
         private readonly IDirectoryService _directoryService;
         private readonly IMongoCollection<Entry> _entries;
+        private readonly HttpOptions _options;
 
         /// <summary>
         /// Entry controller constructor
         /// </summary>
         /// <param name="directoryService"></param>
         /// <param name="mongoDatabase"></param>
-        public EntryController(IDirectoryService directoryService, IMongoDatabase mongoDatabase)
+        /// <param name="options"></param>
+        public EntryController(IDirectoryService directoryService, IMongoDatabase mongoDatabase, IOptions<HttpOptions> options)
         {
             _directoryService = directoryService;
             this._entries = mongoDatabase.GetCollection<Entry>(Entry.Collection);
+            _options = options.Value;
         }
 
         /// <summary>
@@ -48,8 +54,15 @@ namespace general_shortener.Controllers
         public async Task<IActionResult> GetEntry(string slug, [FromQuery] GetEntryRequestModel requestModel)
         {
             List<Entry> entries = this._entries.Find(f => f.Slug == slug).ToList();
-            if (entries.Count == 0) 
-                return NotFound(this.ConstructErrorResponse("Entry with given slug not found"));
+            if (entries.Count == 0)
+            {
+                if (string.IsNullOrEmpty(_options.Redirect.NotFound))
+                {
+                    return NotFound(this.ConstructErrorResponse("Entry with given slug not found"));
+                }
+                return Redirect(_options.Redirect.NotFound);
+            }
+                
             
             Entry entry = entries.First();
             EntryType type = entry.Type;
@@ -62,9 +75,21 @@ namespace general_shortener.Controllers
                 await this._directoryService.HandleFileStream(entry, Request, Response, requestModel.download ?? false);
                 return new EmptyResult();
             }
-            
+
             if (type == EntryType.text)
-                return View("TextView", entry);
+            {
+                if (!requestModel.download ?? true)
+                {
+                    return View(!requestModel.raw??true ? "TextView" : "RawTextView", entry);
+                }
+                else
+                {
+                    await this._directoryService.HandleFileStream(entry, Request, Response, true);
+                    return new EmptyResult();
+                }
+            }
+                
+                
 
             return Ok();
         }
@@ -92,10 +117,14 @@ namespace general_shortener.Controllers
         
             await this._entries.DeleteOneAsync(f => f.Slug == entry.Slug);
             this._directoryService.DeleteFile(entry);
-            return Ok(this.ConstructSuccessResponse(new MessageResponse()
+            if (string.IsNullOrEmpty(_options.Redirect.Deletion))
             {
-                Message = "Entry deleted"
-            }));
+                return Ok(this.ConstructSuccessResponse(new MessageResponse()
+                {
+                    Message = "Entry deleted"
+                }));
+            }
+            return Redirect(_options.Redirect.Deletion);
         }
 
     }
