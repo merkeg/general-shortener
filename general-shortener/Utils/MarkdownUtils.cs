@@ -21,8 +21,7 @@ namespace general_shortener.Utils
         /// <returns></returns>
         public static HtmlString ParseHtmlString(string markdown)
         {
-            return new HtmlString(Markdown.ToHtml(markdown, Pipeline));
-            return new HtmlString("<a>This is a test</a>");
+            return new(Markdown.ToHtml(markdown, Pipeline));
         }
     }
 }
