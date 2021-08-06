@@ -72,7 +72,7 @@ namespace general_shortener.Controllers
 
             if (type == EntryType.file)
             {
-                await this._directoryService.HandleFileStream(entry, Request, Response, requestModel.download ?? false);
+                return await this._directoryService.HandleFileStream(entry, Request, Response, requestModel.download ?? false);
                 return new EmptyResult();
             }
 
@@ -84,8 +84,7 @@ namespace general_shortener.Controllers
                 }
                 else
                 {
-                    await this._directoryService.HandleFileStream(entry, Request, Response, true);
-                    return new EmptyResult();
+                    return await this._directoryService.HandleFileStream(entry, Request, Response, true);
                 }
             }
                 
