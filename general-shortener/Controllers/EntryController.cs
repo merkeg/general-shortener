@@ -5,7 +5,6 @@ using general_shortener.Extensions;
 using general_shortener.Models;
 using general_shortener.Models.Entry;
 using general_shortener.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -59,9 +58,15 @@ namespace general_shortener.Controllers
                 return Redirect(entry.Value);
 
             if (type == EntryType.file)
+            {
                 await this._directoryService.HandleFileStream(entry, Request, Response, requestModel.download ?? false);
+                return new EmptyResult();
+            }
+            
+            if (type == EntryType.text)
+                return View("TextView", entry);
 
-            return new EmptyResult();
+            return Ok();
         }
         
 

@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using general_shortener.Filters;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -26,7 +24,6 @@ namespace general_shortener.Models.Entry
         /// <summary>
         /// Value of the new entry
         /// </summary>
-        [MaxLength(1024)]
         public string value { get; set; }
         
         /// <summary>

@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using FluentAssertions;
 using general_shortener.Models;
 using general_shortener.Models.Entry;

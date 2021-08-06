@@ -1,17 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using general_shortener.Models.Entry;
 using general_shortener.Models.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
-using StackExchange.Redis;
 
 namespace general_shortener.Services
 {
@@ -111,7 +107,7 @@ namespace general_shortener.Services
             {
                 File.Delete(Path.Combine(this._options.Path, fileName));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 _logger.LogError("Error deleting file: " + fileName);
             }

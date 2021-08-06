@@ -57,7 +57,8 @@ namespace general_shortener.Services.Authentication
             {
                 return this.ValidateToken(authorizationHeader);
             }
-            catch (Exception e)
+
+            catch (Exception)
             {
                 return AuthenticateResult.Fail("Unauthorized");
             }

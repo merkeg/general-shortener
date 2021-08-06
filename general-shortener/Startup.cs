@@ -1,24 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using general_shortener.Bootstraps;
-using general_shortener.Filters;
-using general_shortener.Models.Authentication;
 using general_shortener.Services;
-using general_shortener.Services.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
+
 #pragma warning disable 1591
 
 namespace general_shortener
@@ -38,7 +27,6 @@ namespace general_shortener
 
         public void ConfigureServices(IServiceCollection services)
         {
-            
             services.AddHealthChecks();
             services.AddSwaggerBootstrap(_env);
             services.AddAuthenticationBootstrap();
@@ -60,6 +48,7 @@ namespace general_shortener
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
             });
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -80,7 +69,10 @@ namespace general_shortener
                 c.SpecUrl = "/swagger/v1/swagger.json";
                 c.RoutePrefix = "docs";
             });
+            
             app.UseHttpsRedirection();
+            
+            
             app.UseRouting();
             
             app.UseAuthentication();

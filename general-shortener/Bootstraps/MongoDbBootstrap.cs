@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using general_shortener.Models.Options;
 using Microsoft.Extensions.Configuration;
@@ -7,8 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
-using MongoDB.Bson.Serialization.Options;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace general_shortener.Bootstraps

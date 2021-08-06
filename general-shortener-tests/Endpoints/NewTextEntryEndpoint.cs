@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using FluentAssertions;
-using Flurl.Util;
 using general_shortener.Models;
 using general_shortener.Models.Entry;
-using general_shortener_tests.Utils;
-using MongoDB.Bson;
-using Newtonsoft.Json;
 using Xunit;
 using Xunit.Extensions.Ordering;
 

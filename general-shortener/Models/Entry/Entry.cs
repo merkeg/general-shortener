@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace general_shortener.Models.Entry
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using general_shortener.Models;
 using general_shortener.Models.Entry;
@@ -54,7 +53,9 @@ namespace general_shortener.Services
 
                 RedisDatabase = RedisConnection.GetDatabase();
                 logger.LogInformation("Transferring redis data to MongoDB");
+#pragma warning disable 4014
                 TransferData();
+#pragma warning restore 4014
             }
 
             
