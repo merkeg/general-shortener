@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using general_shortener.Models.Entry;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace general_shortener.Services
 {
@@ -31,7 +32,7 @@ namespace general_shortener.Services
         /// <param name="request"></param>
         /// <param name="response"></param>
         /// <param name="forceDownload">Force media download</param>
-        public Task HandleFileStream(Entry entry, HttpRequest request, HttpResponse response, bool forceDownload = false);
+        public Task<IActionResult> HandleFileStream(Entry entry, HttpRequest request, HttpResponse response, bool forceDownload = false);
 
         /// <summary>
         /// Deletes a file
