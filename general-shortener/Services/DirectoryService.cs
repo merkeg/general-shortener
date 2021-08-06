@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using general_shortener.Models.Entry;
 using general_shortener.Models.Options;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -44,7 +46,9 @@ namespace general_shortener.Services
             string extension = Path.GetExtension(file.FileName);
             fileName = fileName + extension;
             string filePath = Path.Combine(this._options.Path, fileName);
-            file.CopyTo(new FileStream(filePath, FileMode.Create));
+            FileStream stream = new FileStream(filePath, FileMode.Create);
+            file.CopyTo(stream);
+            stream.Close();
             return fileName;
         }
 
@@ -60,7 +64,7 @@ namespace general_shortener.Services
         }
 
         /// <inheritdoc />
-        public async Task HandleFileStream(Entry entry, HttpRequest request, HttpResponse response, bool forceDownload = false)
+        public async Task<IActionResult> HandleFileStream(Entry entry, HttpRequest request, HttpResponse response, bool forceDownload = false)
         {
             bool download = true;
             
@@ -83,28 +87,17 @@ namespace general_shortener.Services
             if(download)
                 response.Headers.Add("Content-disposition", $"attachment; filename={entry.Meta.OriginalFilename}");
 
-            string range = request.Headers["range"];
-            if (string.IsNullOrEmpty(range))
-            {
-                range = "bytes=0-";
-            }
+            Stream stream = null;
 
-            string[] positions = range.Replace("bytes=", "").Split("-", StringSplitOptions.RemoveEmptyEntries);
-
-            long start = long.Parse(positions[0]);
-            long total = entry.Meta.Size;
-            long end = positions.Length > 1 ? long.Parse(positions[1]) : total > 1024 ? 1024 : total - 1;
-            long chunksize = end - start + 1;
-            
-            response.Headers.Add("Content-Range", $"bytes {start}-{end}/{total}");
-            if (entry.Type == EntryType.file)
+            switch (entry.Type)
             {
-                await response.SendFileAsync(Path.Combine(this._options.Path, entry.Meta.Filename));
-            } else if (entry.Type == EntryType.text)
-            {
-                await response.WriteAsync(entry.Value);
+                case EntryType.url:
+                    break;
+                case EntryType.file:
+                    stream = new MemoryStream(await File.ReadAllBytesAsync(Path.Combine(this._options.Path, entry.Meta.Filename)));
+                    break;
             }
-            
+            return new FileStreamResult(stream, entry.Meta.Mime);
         }
 
         /// <inheritdoc />
