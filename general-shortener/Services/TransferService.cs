@@ -94,6 +94,15 @@ namespace general_shortener.Services
                         OriginalFilename = model.Type == EntryType.file ? model.Value : null
                     }
                 };
+
+                if (model.Type == EntryType.text)
+                {
+                    newEntry.Meta.Filename = newEntry.Slug + ".txt";
+                    newEntry.Meta.OriginalFilename = newEntry.Slug + ".txt";
+                    newEntry.Meta.Mime = "text/plain";
+                    newEntry.Meta.Size = newEntry.Value.Length;
+
+                }
                 
                 _logger.LogDebug($"Transferred entry {newEntry.Slug} with type '{newEntry.Type}' to MongoDB");
                 await _entries.ReplaceOneAsync( filter: f => f.Slug == newEntry.Slug, options: new ReplaceOptions {IsUpsert = true}, replacement: newEntry);
