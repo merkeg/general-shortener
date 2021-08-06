@@ -69,10 +69,7 @@ namespace general_shortener
                 c.SpecUrl = "/swagger/v1/swagger.json";
                 c.RoutePrefix = "docs";
             });
-            
-            app.UseHttpsRedirection();
-            
-            
+
             app.UseRouting();
             
             app.UseAuthentication();
