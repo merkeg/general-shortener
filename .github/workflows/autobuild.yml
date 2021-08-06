@@ -7,7 +7,7 @@ on:
       - 'master'
       - 'develop'
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
 
 jobs:
   docker:
