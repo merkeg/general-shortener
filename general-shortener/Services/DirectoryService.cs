@@ -97,7 +97,14 @@ namespace general_shortener.Services
             long chunksize = end - start + 1;
             
             response.Headers.Add("Content-Range", $"bytes {start}-{end}/{total}");
-            await response.SendFileAsync(Path.Combine(this._options.Path, entry.Meta.Filename));
+            if (entry.Type == EntryType.file)
+            {
+                await response.SendFileAsync(Path.Combine(this._options.Path, entry.Meta.Filename));
+            } else if (entry.Type == EntryType.text)
+            {
+                await response.WriteAsync(entry.Value);
+            }
+            
         }
 
         /// <inheritdoc />

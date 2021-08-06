@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using general_shortener.Models;
 using general_shortener.Models.Entry;
@@ -52,7 +53,7 @@ namespace general_shortener.Services
                 RedisConnection = ConnectionMultiplexer.Connect(configuration);
 
                 RedisDatabase = RedisConnection.GetDatabase();
-                logger.LogInformation("Transferring redis data to MongoDB");
+                Console.WriteLine("Transferring redis data to MongoDB");
 #pragma warning disable 4014
                 TransferData();
 #pragma warning restore 4014
@@ -98,7 +99,7 @@ namespace general_shortener.Services
                 await _entries.ReplaceOneAsync( filter: f => f.Slug == newEntry.Slug, options: new ReplaceOptions {IsUpsert = true}, replacement: newEntry);
             }
             
-            _logger.LogInformation("Finished transferring data to MongoDB");
+            Console.WriteLine("Finished transferring data to MongoDB");
         }
     }
 }
