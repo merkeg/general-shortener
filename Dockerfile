@@ -4,6 +4,7 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+COPY --from=mcr.microsoft.com/dotnet/core/aspnet:2.1 /usr/share/dotnet /usr/share/dotnet
 WORKDIR /src
 COPY ["general-shortener/general-shortener.csproj", "general-shortener/"]
 RUN dotnet restore "general-shortener/general-shortener.csproj"

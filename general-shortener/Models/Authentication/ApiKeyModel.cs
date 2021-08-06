@@ -5,9 +5,14 @@ namespace general_shortener.Models.Authentication
     public class ApiKeyModel
     {
         /// <summary>
+        /// Id of the Api key in the document.
+        /// </summary>
+        public int Id { get; set; }
+        
+        /// <summary>
         /// The actual key
         /// </summary>
-        public string Key { get; set; }
+        public string Token { get; set; }
         
         /// <summary>
         /// Description (or source) of the api key

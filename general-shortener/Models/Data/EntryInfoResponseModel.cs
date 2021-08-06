@@ -11,7 +11,7 @@ namespace general_shortener.Models.Data
     public class EntryInfoResponseModel
     {
         /// <summary>
-        /// Resource slug
+        /// Entry slug
         /// </summary>
         public string Slug { get; set; }
         
@@ -26,16 +26,22 @@ namespace general_shortener.Models.Data
         /// <summary>
         /// If entry is a file, size of the file
         /// </summary>
-        public uint Size { get; set; }
+        public long Size { get; set; }
         
         /// <summary>
         /// Deletion code of the resource if needed
         /// </summary>
+        [JsonProperty(PropertyName = "deletion_code")]
         public string DeletionCode { get; set; }
         
         /// <summary>
         /// Mimetype of the entry if entry is a file
         /// </summary>
         public string Mime { get; set; }
+        
+        /// <summary>
+        /// Value of the entry
+        /// </summary>
+        public string Value { get; set; }
     }
 }
