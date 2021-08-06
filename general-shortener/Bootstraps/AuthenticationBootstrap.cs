@@ -17,7 +17,11 @@ namespace general_shortener.Bootstraps
         /// <param name="services"></param>
         public static void AddAuthenticationBootstrap(this IServiceCollection services)
         {
-            services.AddAuthentication("Bearer")
+            services.AddAuthentication(config =>
+                {
+                    config.DefaultAuthenticateScheme = "Bearer";
+                    config.DefaultChallengeScheme = "Bearer";
+                })
                 .AddScheme<ApiAuthenticationHandlerOptions, ApiAuthenticationHandler>("Bearer", null);
             services.AddSingleton<IApiAuthenticationManager, ApiKeyAuthenticationManager>();
 
