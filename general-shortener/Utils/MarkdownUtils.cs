@@ -12,7 +12,7 @@ namespace general_shortener.Utils
         /// <summary>
         /// Markdown pipeline
         /// </summary>
-        public static MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseEmojiAndSmiley().UseSmartyPants().Build();
+        public static MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseSoftlineBreakAsHardlineBreak().UseEmojiAndSmiley().UseSmartyPants().Build();
 
         /// <summary>
         /// Parse markdown string to html string
