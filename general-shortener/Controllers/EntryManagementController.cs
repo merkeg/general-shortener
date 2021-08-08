@@ -93,6 +93,18 @@ namespace general_shortener.Controllers
                 DeletionCode = deletionCode,
                 Value = entryRequestModel.value,
             };
+            
+            var entriesInDb = (await (await this._entries.FindAsync(f => f.Slug == slug)).ToListAsync());
+
+            if (entriesInDb.Count != 0)
+            {
+                var oldEntry = entriesInDb.First();
+                if (oldEntry.Type == EntryType.file)
+                {
+                    this._directoryService.DeleteFile(oldEntry);
+                }
+                entry.Id = oldEntry.Id;
+            }
 
             if (entryRequestModel.type == EntryType.file)
             {

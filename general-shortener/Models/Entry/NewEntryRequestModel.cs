@@ -29,7 +29,8 @@ namespace general_shortener.Models.Entry
         /// <summary>
         /// Custom slug for entry
         /// </summary>
-        [Range(1, 128)]
+        [MinLength(1)]
+        [MaxLength(128)]
         public string slug { get; set; }
 
         /// <summary>
