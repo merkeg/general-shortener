@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -94,7 +95,16 @@ namespace general_shortener.Services
                 case EntryType.url:
                     break;
                 case EntryType.file:
-                    stream = new MemoryStream(await File.ReadAllBytesAsync(Path.Combine(this._options.Path, entry.Meta.Filename)));
+                    string filePath = Path.Combine(this._options.Path, entry.Meta.Filename);
+                    if (File.Exists(filePath))
+                    {
+                        stream = new MemoryStream(await File.ReadAllBytesAsync(filePath));
+                    }
+                    else
+                    {
+                        return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                    }
+                    
                     break;
             }
             return new FileStreamResult(stream, entry.Meta.Mime);
