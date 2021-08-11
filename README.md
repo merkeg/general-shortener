@@ -63,7 +63,7 @@ When the migration is done, stop the server and remove the `Transfer__*` environ
 |---------------------------|---------|-----------------------------------------------------|----------|
 | MasterToken               | String  | Mastertoken with full access to the underlying api             | true     |
 |                           |         |                                                     |          |
-| BaseUrl                   | String  | Base Url                                            | true     |
+| BaseUrl                   | String  | Force base url or use the host the request was sent                                            | false     |
 |                           |         |                                                     |          |
 | Storage__Path             | String  | Path of where the files will be saved to            | true     |
 |                           |         |                                                     |          |

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using general_shortener.Attributes;
@@ -39,7 +40,7 @@ namespace general_shortener.Controllers
             _logger = logger;
             _directoryService = directoryService;
             this._entries = mongoDatabase.GetCollection<Entry>(Entry.Collection);
-            this._baseUrl = configuration.GetValue<string>("BaseUrl");
+            this._baseUrl = configuration.GetValue<string>("BaseUrl", null);
         }
         
         /// <summary>
@@ -123,7 +124,8 @@ namespace general_shortener.Controllers
             }
 
             await this._entries.ReplaceOneAsync( filter: f => f.Slug == slug, options: new ReplaceOptions() {IsUpsert = true}, replacement: entry);
-            string accessUrl = Flurl.Url.Combine(this._baseUrl, entry.Slug);
+            string baseUrl = !string.IsNullOrEmpty(this._baseUrl)? this._baseUrl : $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToString()}";
+            string accessUrl = Flurl.Url.Combine(baseUrl, entry.Slug);
             string deletionUrl = Flurl.Url.Combine(accessUrl, entry.DeletionCode);
             
             return Created(accessUrl, this.ConstructSuccessResponse(new NewEntryResponseModel()

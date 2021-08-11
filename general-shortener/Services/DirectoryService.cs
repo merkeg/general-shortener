@@ -86,7 +86,7 @@ namespace general_shortener.Services
                 }
             }
             if(download)
-                response.Headers.Add("Content-disposition", $"attachment; filename={entry.Meta.OriginalFilename}");
+                response.Headers.Add("Content-disposition", $"attachment; filename={entry.Meta.OriginalFilename??entry.Meta.Filename}");
 
             Stream stream = null;
 
