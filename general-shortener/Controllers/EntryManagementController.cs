@@ -137,7 +137,7 @@ namespace general_shortener.Controllers
         }
         
         /// <summary>
-        /// Get Entries.
+        /// Get Entries
         /// </summary>
         [TypedAuthorize(Claim.entries_list)]
         [HttpGet()]
