@@ -30,7 +30,7 @@ namespace general_shortener.Controllers
 
         private readonly IMongoCollection<Entry> _entries;
         private readonly string _baseUrl;
-        
+        private readonly bool _forceHttps;
         
         /// <summary>
         /// Constructor
@@ -41,6 +41,7 @@ namespace general_shortener.Controllers
             _directoryService = directoryService;
             this._entries = mongoDatabase.GetCollection<Entry>(Entry.Collection);
             this._baseUrl = configuration.GetValue<string>("BaseUrl", null);
+            this._forceHttps = configuration.GetValue<bool>("ForceHTTPS", false);
         }
         
         /// <summary>
@@ -124,7 +125,8 @@ namespace general_shortener.Controllers
             }
 
             await this._entries.ReplaceOneAsync( filter: f => f.Slug == slug, options: new ReplaceOptions() {IsUpsert = true}, replacement: entry);
-            string baseUrl = !string.IsNullOrEmpty(this._baseUrl)? this._baseUrl : $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToString()}";
+            string scheme = this._forceHttps ? "https" : HttpContext.Request.Scheme;
+            string baseUrl = !string.IsNullOrEmpty(this._baseUrl)? this._baseUrl : $"{scheme}://{HttpContext.Request.Host.ToString()}";
             string accessUrl = Flurl.Url.Combine(baseUrl, entry.Slug);
             string deletionUrl = Flurl.Url.Combine(accessUrl, entry.DeletionCode);
             
