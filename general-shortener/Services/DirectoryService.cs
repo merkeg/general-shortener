@@ -4,6 +4,8 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using App.Metrics;
+using general_shortener.Metrics;
 using general_shortener.Models.Entry;
 using general_shortener.Models.Options;
 using Microsoft.AspNetCore.Http;
@@ -26,12 +28,13 @@ namespace general_shortener.Services
         private readonly StorageOptions _options;
         private readonly ILogger<DirectoryService> _logger;
         private readonly FileExtensionContentTypeProvider _fileExtensionContentTypeProvider;
-        
+
         /// <summary>
         /// Directory service class
         /// </summary>
         /// <param name="options"></param>
         /// <param name="logger"></param>
+        /// <param name="metrics"></param>
         public DirectoryService(IOptions<StorageOptions> options, ILogger<DirectoryService> logger)
         {
             _options = options.Value;

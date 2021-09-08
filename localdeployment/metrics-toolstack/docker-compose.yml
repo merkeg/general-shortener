@@ -1,0 +1,24 @@
+version: "3.1"
+services:
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - 8082:9090
+    networks:
+      - metrics
+      - metrics-backend
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - 8081:3000
+    networks:
+      - metrics-backend
+networks:
+  metrics:
+    external: true
+    name: metrics
+  metrics-backend:

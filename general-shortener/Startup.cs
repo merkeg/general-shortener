@@ -27,6 +27,9 @@ namespace general_shortener
 
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            services.AddMetrics();
+            
             services.AddHealthChecks();
             services.AddSwaggerBootstrap(_env);
             services.AddAuthenticationBootstrap();
