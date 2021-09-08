@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Metrics;
 using general_shortener.Extensions;
+using general_shortener.Metrics;
 using general_shortener.Models;
 using general_shortener.Models.Entry;
 using general_shortener.Models.Options;
@@ -22,6 +24,7 @@ namespace general_shortener.Controllers
     public class EntryController : Controller
     {
         private readonly IDirectoryService _directoryService;
+        private readonly IMetrics _metrics;
         private readonly IMongoCollection<Entry> _entries;
         private readonly HttpOptions _options;
 
@@ -31,9 +34,11 @@ namespace general_shortener.Controllers
         /// <param name="directoryService"></param>
         /// <param name="mongoDatabase"></param>
         /// <param name="options"></param>
-        public EntryController(IDirectoryService directoryService, IMongoDatabase mongoDatabase, IOptions<HttpOptions> options)
+        /// <param name="metrics"></param>
+        public EntryController(IDirectoryService directoryService, IMongoDatabase mongoDatabase, IOptions<HttpOptions> options, IMetrics metrics)
         {
             _directoryService = directoryService;
+            _metrics = metrics;
             this._entries = mongoDatabase.GetCollection<Entry>(Entry.Collection);
             _options = options.Value;
         }
@@ -66,14 +71,19 @@ namespace general_shortener.Controllers
             
             Entry entry = entries.First();
             EntryType type = entry.Type;
-
+            
+            this._metrics.Measure.Counter.Increment(MetricsRegistry.EntryServed, type.ToString());
+            
             if (type == EntryType.url)
+            {
                 return Redirect(entry.Value);
+            }
+                
 
             if (type == EntryType.file)
             {
+                _metrics.Measure.Counter.Increment(MetricsRegistry.EntryMimetypeServed, entry.Meta.Mime.ToLower());
                 return await this._directoryService.HandleFileStream(entry, Request, Response, requestModel.download ?? false);
-                return new EmptyResult();
             }
 
             if (type == EntryType.text)
@@ -82,10 +92,7 @@ namespace general_shortener.Controllers
                 {
                     return View(!requestModel.raw??true ? "TextView" : "RawTextView", entry);
                 }
-                else
-                {
-                    return await this._directoryService.HandleFileStream(entry, Request, Response, true);
-                }
+                return await this._directoryService.HandleFileStream(entry, Request, Response, true);
             }
                 
                 

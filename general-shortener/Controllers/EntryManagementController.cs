@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Metrics;
 using general_shortener.Attributes;
 using general_shortener.Extensions;
+using general_shortener.Metrics;
 using general_shortener.Models;
 using general_shortener.Models.Authentication;
 using general_shortener.Models.Data;
@@ -27,6 +29,7 @@ namespace general_shortener.Controllers
     {
         private readonly ILogger<EntryManagementController> _logger;
         private readonly IDirectoryService _directoryService;
+        private readonly IMetrics _metrics;
 
         private readonly IMongoCollection<Entry> _entries;
         private readonly string _baseUrl;
@@ -35,10 +38,11 @@ namespace general_shortener.Controllers
         /// <summary>
         /// Constructor
         /// </summary>
-        public EntryManagementController(IMongoDatabase mongoDatabase, ILogger<EntryManagementController> logger, IConfiguration configuration, IDirectoryService directoryService)
+        public EntryManagementController(IMongoDatabase mongoDatabase, ILogger<EntryManagementController> logger, IConfiguration configuration, IDirectoryService directoryService, IMetrics metrics)
         {
             _logger = logger;
             _directoryService = directoryService;
+            _metrics = metrics;
             this._entries = mongoDatabase.GetCollection<Entry>(Entry.Collection);
             this._baseUrl = configuration.GetValue<string>("BaseUrl", null);
             this._forceHttps = configuration.GetValue<bool>("ForceHTTPS", false);
@@ -96,6 +100,8 @@ namespace general_shortener.Controllers
                 Value = entryRequestModel.value,
             };
             
+            _metrics.Measure.Counter.Increment(MetricsRegistry.Upload, entry.Type.ToString());
+            
             var entriesInDb = (await (await this._entries.FindAsync(f => f.Slug == slug)).ToListAsync());
 
             if (entriesInDb.Count != 0)
@@ -115,6 +121,7 @@ namespace general_shortener.Controllers
                 entry.Meta.OriginalFilename = file.FileName;
                 entry.Meta.Mime = this._directoryService.GuessMimetype(file.FileName);
                 entry.Meta.Size = file.Length;
+                _metrics.Measure.Counter.Increment(MetricsRegistry.UploadMimetype, entry.Meta.Mime);
             }
 
             if (entryRequestModel.type == EntryType.text)
