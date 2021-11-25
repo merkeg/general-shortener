@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using App.Metrics;
 using general_shortener.Extensions;
 using general_shortener.Metrics;
 using general_shortener.Models;
 using general_shortener.Models.Entry;
+using general_shortener.Models.Logging;
 using general_shortener.Models.Options;
 using general_shortener.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -27,6 +30,7 @@ namespace general_shortener.Controllers
         private readonly IMetrics _metrics;
         private readonly IMongoCollection<Entry> _entries;
         private readonly HttpOptions _options;
+        private readonly ILogger<EntryController> _logger;
 
         /// <summary>
         /// Entry controller constructor
@@ -35,10 +39,12 @@ namespace general_shortener.Controllers
         /// <param name="mongoDatabase"></param>
         /// <param name="options"></param>
         /// <param name="metrics"></param>
-        public EntryController(IDirectoryService directoryService, IMongoDatabase mongoDatabase, IOptions<HttpOptions> options, IMetrics metrics)
+        /// <param name="logger"></param>
+        public EntryController(IDirectoryService directoryService, IMongoDatabase mongoDatabase, IOptions<HttpOptions> options, IMetrics metrics, ILogger<EntryController> logger)
         {
             _directoryService = directoryService;
             _metrics = metrics;
+            _logger = logger;
             this._entries = mongoDatabase.GetCollection<Entry>(Entry.Collection);
             _options = options.Value;
         }
@@ -63,31 +69,67 @@ namespace general_shortener.Controllers
             {
                 if (string.IsNullOrEmpty(_options.Redirect.NotFound))
                 {
+                    _logger.LogEntryInfo(new EntryInfoLoggingModel()
+                    {
+                        Status = HttpStatusCode.NotFound,
+                        Id = slug
+                    });
                     return NotFound(this.ConstructErrorResponse("Entry with given slug not found"));
                 }
+                _logger.LogEntryInfo(new EntryInfoLoggingModel()
+                {
+                    Status = HttpStatusCode.Redirect,
+                    Id = slug
+                });
                 return Redirect(_options.Redirect.NotFound);
             }
                 
             
             Entry entry = entries.First();
             EntryType type = entry.Type;
-            
+
             this._metrics.Measure.Counter.Increment(MetricsRegistry.EntryServed, type.ToString());
             
             if (type == EntryType.url)
             {
+                _logger.LogEntryInfo(new EntryInfoLoggingModel()
+                {
+                    Status = HttpStatusCode.Redirect,
+                    Id = slug,
+                    Type = type,
+                    Value = entry.Value,
+                    Size = entry.Meta.Size,
+                    Owner = entry.Meta.Owner.ToString()
+                });
                 return Redirect(entry.Value);
             }
                 
 
             if (type == EntryType.file)
             {
+                _logger.LogEntryInfo(new EntryInfoLoggingModel()
+                {
+                    Status = HttpStatusCode.Redirect,
+                    Id = slug,
+                    Type = type,
+                    Mimetype = entry.Meta.Mime,
+                    Size = entry.Meta.Size,
+                    Owner = entry.Meta.Owner.ToString()
+                });
                 _metrics.Measure.Counter.Increment(MetricsRegistry.EntryMimetypeServed, entry.Meta.Mime.ToLower());
                 return await this._directoryService.HandleFileStream(entry, Request, Response, requestModel.download ?? false);
             }
 
             if (type == EntryType.text)
             {
+                _logger.LogEntryInfo(new EntryInfoLoggingModel()
+                {
+                    Status = HttpStatusCode.Redirect,
+                    Id = slug,
+                    Type = type,
+                    Size = entry.Meta.Size,
+                    Owner = entry.Meta.Owner.ToString()
+                });
                 if (!requestModel.download ?? true)
                 {
                     return View(!requestModel.raw??true ? "TextView" : "RawTextView", entry);
