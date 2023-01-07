@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Text.Json.Serialization;
 using general_shortener.Bootstraps;
 using general_shortener.Services;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 #pragma warning disable 1591
 
@@ -38,6 +41,11 @@ namespace general_shortener
 
             services.AddSingleton<IDirectoryService, DirectoryService>();
             services.AddSingleton<ITransferService, TransferService>();
+
+            services.AddLogging(builder =>
+            {
+                builder.AddFile(Configuration.GetSection("Logging"));
+            });
             
             services.AddControllers().AddJsonOptions(options =>
             {
